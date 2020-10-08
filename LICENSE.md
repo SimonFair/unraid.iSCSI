@@ -1,6 +1,6 @@
 ### Unassigned Devices plugin for Unraid
 
-Copyright (C) 2015 Guilherme Jardim
+Copyright (C) 2020 Simon Fairweather
 Copyright (C) 2016-2020 Dan Landon
 
 This program is free software; you can redistribute it and/or modify

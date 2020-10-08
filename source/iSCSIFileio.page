@@ -1,0 +1,57 @@
+Menu="iSCSITools:4"
+Title="FileIO"
+Tag="file"
+Cond="file_exists('/var/run/iscsi.tab')"
+---
+<?PHP
+/* Copyright 2020-2020, Simon Fairweather
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ */
+$plugin = "unraid.iSCSI";
+$docroot = $docroot ?? $_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
+$translations = file_exists("$docroot/webGui/include/Translations.php");
+require_once "$docroot/plugins/$plugin/include/Legacy.php";
+?>
+<?if (! $translations):?>
+<?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSIFileio.page"))?>
+<?else:?>
+<?
+/* read translations */
+parse_plugin('unraidiscsi');
+?>
+
+
+<style>
+table.pre{margin-top:0;background:transparent}
+table.pre td:first-child{width:50px ;}
+table.pre td:second-child{width:50px}
+table.pre td:third-child{width:50px}
+table tr td{padding:0 0 3px 0;margin:0 padding:0px; border-width:0px; }
+table tr td.thin{line-height:8px;height:8px}
+</style>
+
+
+
+<script>
+$(function(){
+$('#ft1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'ft1'});
+});
+</script>
+
+
+
+_(File IO Volumes)_
+
+
+
+<pre><table id='ft1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
+
+<input type="button" value="_(Done)_" onclick="done()">
+
+<?endif;?>

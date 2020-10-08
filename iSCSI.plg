@@ -3,10 +3,10 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "unraid.iSCSI">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2020.10.05">
+<!ENTITY version   "2020.10.28">
 <!ENTITY launch    "Tools/iSCSI">
-<!ENTITY gitURL    "https://github.com/&author;/&name;/raw/master">
-<!ENTITY pluginURL "&gitURL;/&name;.plg">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
+<!ENTITY pluginURL "&gitURL;/iSCSI.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/">
 <!ENTITY packages	"/boot/config/plugins/&name;/packages">
 <!ENTITY MD5		"d1ce06746a0110f557166e50f05f28bf">
@@ -24,11 +24,8 @@
 <CHANGES>
 ##&name;
 ###&version;
-- Fix: Nvme devices were incorrectly being spun down.
+28th Update
 
-
-
-###2015.03.08
 - initial release.
 </CHANGES>
 
@@ -50,7 +47,6 @@ Get the plugin bundle.
 -->
 <FILE Name="&packages;/&name;-&version;.tgz">
 <URL>"&gitURL;/&name;-&version;.tgz"</URL>
-<MD5>&MD5;</MD5>
 </FILE>
 
 
@@ -59,40 +55,20 @@ The 'post-install' script.
 -->
 <FILE Run="/bin/bash">
 <INLINE>
-# Create logs directory.
-mkdir /tmp/&name; 2>/dev/null
-
 # Install the plugin bundle.
 # Create plugin directory
 mkdir /boot/config/plugins/&name; 2>/dev/null
+mkdir /usr/local/emhttp/plugins/&name; 2>/dev/null
 
 # Remove old packages
 find "&packages;/" -type f -iname "*.txz" -delete
 
 # Install the 'bundle'.
-tar -xf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins 2>/dev/null
-
-# move the rules file
-#mv /usr/local/emhttp/plugins/&name;/99_persistent_unassigned.rules /etc/udev/rules.d/
-#chmod 644 -R /etc/udev/rules.d/99_persistent_unassigned.rules 2>/dev/null
+tar -vxf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
 
 # Adjust plugin permissions.
 chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
 
-# Create a symlink to rm.
-#ln -sf /bin/rm /usr/local/emhttp/plugins/&name;/scripts/
-
-# Fix permissions of executable files
-chmod +x /usr/local/emhttp/plugins/&name;/scripts/* /usr/local/emhttp/plugins/&name;/event/*
-
-# Create a scripts directory to run UD device scripts
-mkdir - /tmp/&name;/scripts
-
-
-# Rename original Dynamix page
-#if [[ -e /usr/local/emhttp/plugins/dynamix/OpenDevices.page ]]; then
-#  mv -f /usr/local/emhttp/plugins/dynamix/OpenDevices.page /usr/local/emhttp/plugins/dynamix/OpenDevices.page-
-#fi
 
 # Clean out old plugin packages
 find /boot/config/plugins/&name; -maxdepth 1 -type f -iname "*.t*z" -delete
@@ -103,7 +79,7 @@ find &packages; -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; has been installed."
-echo " Copyright 2015, gfjardim"
+echo " "
 echo " Copyright 2016-2020, &author;"
 echo " Version: &version;"
 echo ""
@@ -131,13 +107,10 @@ find "&packages;/" -type f -iname "*.txz" -delete
 
 # Remove possible leftovers
 rm -rf /usr/local/emhttp/plugins/&name; \
-       /var/state/&name; \
+       \
        &packages;
 
-rm -f /tmp/plugins/&name;.plg \
-      /usr/local/sbin/rc.unassigned \
-	  /usr/local/sbin/mkmbr.sh \
-      /etc/udev/rules.d/99_persistent_unassigned.rules
+rm -f /tmp/plugins/&name;.plg 
 
 
 
@@ -145,8 +118,6 @@ rm -f /tmp/plugins/&name;.plg \
 rm -rf /usr/local/emhttp/plugins/&name; 2>/dev/null
 
 
-# Remove the tmp directory.
-rm -r /tmp/&name; 2>/dev/null
 
 
 echo ""
