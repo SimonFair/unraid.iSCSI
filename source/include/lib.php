@@ -12,7 +12,16 @@
 $plugin = "unassigned.devices";
 $docroot = $docroot ?: @$_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
 $disks = @parse_ini_file("$docroot/state/disks.ini", true);
- $VERBOSE=FALSE; 
+$VERBOSE=FALSE; 
+
+/* For when the config file doesn't exist
+ * on flash storage */
+define('DEFAULT_TARGETCLI_CONFIG', '{
+  "fabric_modules": [],
+  "storage_objects": [],
+  "targets": []
+}');
+
 #########################################################
 ############         DISK FUNCTIONS         #############
 #########################################################
@@ -108,8 +117,22 @@ function unassigned_log($m, $type = "NOTICE") {
 function get_iscsi_json() {
 	global $iSCSI_JSON ;
 
-
-	$string = file_get_contents("/etc/target/saveconfig.json");
+	$configfile="/etc/target/saveconfig.json";
+	/* More than likely this is a symbolic link - check and
+	 * reorient if so */
+	if (is_link($configfile))
+	{
+		$configfile=readlink($configfile);
+	}
+	/* Fill with empty config if it doesn't exist */
+	if (!file_exists($configfile))
+	{
+		file_put_contents($configfile, $string=DEFAULT_TARGETCLI_CONFIG);
+	}
+	else
+	{
+		$string = file_get_contents($configfile);
+	}
 	$tj = json_decode($string, true);
 	$t=$iSCSI_JSON=json_decode(implode("", $tj), true);
 	
@@ -155,8 +178,8 @@ function build_iscsi_initiators($tj) {
 	
 	$sd = $tj["targets"][0] ;
 	$tgt=$sd["tpgs"][0] ;
-	$luns=$tgt["luns"] ;
-	$node_acls=$tgt["node_acls"] ;
+	$luns=(isset($tgt["luns"]) ? $tgt["luns"] : []);
+	$node_acls=(isset($tgt["node_acls"]) ? $tgt["node_acls"] : []) ;
 	$portals=$tgt["portals"] ;
 	$parms=$tgt["parameters"] ;
 	$enable=$tgt["enable"] ;
@@ -184,6 +207,7 @@ function filelock() {
 		fclose($fp) ;
 		return true ;
 	}
+}
 } 
 
 function processTargetcli($cmdstr) {
