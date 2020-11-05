@@ -53,6 +53,12 @@ case 't4':
       echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
      }   
     break;
+case 'st2':
+      exec('cat /var/run/targetcli.last'  ,$TC);
+          foreach ($TC as $line) {
+        echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
+       }   
+      break;
 
 case 'dt1':
         $groups=get_unassigned_disks() ;
@@ -144,9 +150,9 @@ EOT;
  }
  }
  echo '<tr><td><br>' ;
-            echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="applyCfgInit();" '.'>';
+            echo '<input id="addInit" type="submit"  value="'._('Add new FileIO').'" onclick="addFileIO();" '.'>';
             echo "</td><td><br>" ; 
-            echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="applyCfgMap();" '.'>';
+            echo '<input id="addMap" type="submit"  value="'._('Remove Fileio').'" onclick="removeFileIO();" '.'>';
             echo '<span id="warning"></span>';
             echo '</td><td>';
             echo '</td></tr>';
@@ -206,10 +212,10 @@ case 'it1':
   
 
    echo '</td><td><br>';
-   echo '<input id="addlun" type="submit"  value="'._('Remove Selected LUN(s)').'" onclick="applyLUNadd();" '.'>';
+   echo '<input id="removelun" type="submit"  value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
    echo '</td><td><br>' ;
-      echo '<input id="rmvLUN" type="submit" value="'._('Add new LUN').'" onclick="applyrmvLUN();" '.'>';
-      echo '<span id="warning"></span>';
+      echo '<input id="addLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.'>';
+      echo '<span id="warningLUN"></span>';
       echo '</td></tr>';
     break;
 }

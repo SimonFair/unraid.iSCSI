@@ -1,6 +1,5 @@
 <?PHP
-/* Copyright 2005-2020, Lime Technology
- * Copyright 2012-2020, Bergware International.
+/* Copyright 2020, Simon Fairweather
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2,
@@ -28,12 +27,11 @@ $newe= var_export($newe, true);
     echo "0";
   }
 
-  $bsblockcrt="/backstore/block create " ;
-  $bsblockcrt="/backstore/block delete " ;
-  $bspscsi="/backstore/pscsi create "    ;
-  $bspscsi="/backstore/pscsi delete "    ;
-  $bsfileio="/backstores/fileio create  " ;
-  $bsfileio="/backstores/fileio delete  " ;
+
+  $bsblock="/backstore/block " ;
+  $bspscsi="/backstore/pscsi "    ;
+  $bsfileio="/backstores/fileio " ;
+ 
   /*
 
   0 => 'iscsiset',
@@ -50,28 +48,35 @@ $newe= var_export($newe, true);
   */
   #build commands array
   # /backstores/block create usb-Sony_Hard_Drive_235853211C8A-0:0 /dev/disk/by-id/usb-Sony_Hard_Drive_235853211C8A-0:0 readonly=true 
-$index=0
-do {
-
+ $x=$newe ; 
+ $index=20 ;
   $type = $x[$index+1] ;
-  $name = $x[$index+2] ; need to remove /dev/disk/by-id 
-  $name = strpos()
+  $name = $x[$index+2] ; 
   $devexist = $x[$index+3];
   $devchange =$x[$index+4];
   $readonly = $x[$index+8] ;
   $rochange = $x[$index+1] ;
   $key=$x[($index+2)] ;
 
-  if type=rom then
-   $cmdstr=$bspscsi
-   else $cmdstr=$bpblock    
-   )
+ # if type=rom then
+ #  $cmdstr=$bspscsi
+ #  else $cmdstr=$bpblock    
+ #  )
 
-  if remove
-  then add remove else add create_function
-  
-  if exists and change of readonly
-    if exists need to delete and then add as ro
+ # if remove
+ # then add remove else add create_function
+ # 
+ # if exists and change of readonly
+ #   if exists need to delete and then add as ro
+if ($type="rom")  $cmd=$bspscsi ;
+if ($type="disk") $cmd=$bsblck ;
+
+if ($devexist && !$devchange) $cmd = $cmd."delete ".$name ;
+
+$cmd=$type.$name." ".$devexist." ".$devchange ;
+
+exec("echo \"$cmd\" >/tmp/liochg3.cfg", $output, $myreturn );
+if ($myreturn !== "0") {
+  echo "0";
 }
-
 ?>

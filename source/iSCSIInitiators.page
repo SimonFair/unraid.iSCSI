@@ -38,6 +38,54 @@ $(function(){
 $('#it1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'it1'});
 $('#it2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'it2'});
 });
+function addLUN() {
+  document.getElementById("warningLUN").innerHTML = "<b>_(Add Function not Implemented for LUNs)_.</b>";
+  var message = "_(System Devices)_: _(A reboot is required to apply changes)_";
+  var elements = document.getElementById("iscsidev").elements;
+  var string ="" ;
+  for (var i = 0, element; element = elements[i++];) {
+    if (element.type === "checkbox" && element.value !=="" )
+    string = string + element.value +';'+ element.checked +";";
+  }
+
+  $.get( "/plugins/unraid.iSCSI/include/blockdevice.php", { cfg: string } )
+  .done(function(d) {
+    if (d==1) {
+      addRebootNotice(message);
+      document.getElementById("warningDev").innerHTML = "<b>_(ALERT)_: _(Changes saved)_. _(Reboot to take effect)_.</b>";
+    } else {
+      removeRebootNotice(message);
+      document.getElementById("warningDev").innerHTML = "<b>_(No changes)_.</b>";
+    }
+  });
+}
+function removeLUN() {
+  document.getElementById("warningLUN").innerHTML = "<b>_(Remove Function not Implemented for LUNs)_.</b>";
+  openBox("/webGui/include/SystemInformation.php?more=<?=isset($display['sysinfo'])?$display['sysinfo']:''?>","_(System Information)_",600,600);
+ }
+function testLUN() {
+  document.getElementById("warningLUN").innerHTML = "<b>_(Remove Function not Implemented for LUNs)_.</b>";
+  openBox("/webGui/include/SystemInformation.php?more=<?=isset($display['sysinfo'])?$display['sysinfo']:''?>","_(System Information)_",600,600);
+  var message = "_(System Devices)_: _(A reboot is required to apply changes)_";
+  var elements = document.getElementById("iscsidev").elements;
+  var string ="" ;
+  for (var i = 0, element; element = elements[i++];) {
+    if (element.type === "checkbox" && element.value !=="" )
+    string = string + element.value +';'+ element.checked +";";
+  }
+  
+
+  $.get( "/plugins/unraid.iSCSI/include/blockdevice.php", { cfg: string } )
+  .done(function(d) {
+    if (d==1) {
+      addRebootNotice(message);
+      document.getElementById("warningDev").innerHTML = "<b>_(ALERT)_: _(Changes saved)_. _(Reboot to take effect)_.</b>";
+    } else {
+      removeRebootNotice(message);
+      document.getElementById("warningDev").innerHTML = "<b>_(No changes)_.</b>";
+    }
+  });
+}
 </script>
 
 
