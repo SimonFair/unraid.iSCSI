@@ -4,17 +4,20 @@
 <PluginURL>https://github.com/SimonFair/unraid.iSCSI/raw/main/iSCSI.plg</PluginURL>
 <PluginAuthor>SimonFair</PluginAuthor>
 <Beta>True</Beta>
-<Category>Tools:System</Category>
-<Name>iSCSI</Name>
+<Category>Other:</Category>
+<Name>unraid.iSCSI</Name>
 <DonateText>If you wanna buy me a coffee.</DonateText>
-<DonateLink>https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UN2MQ5N7SFGGA&currency_code=GBP</DonateLink>
+<DonateLink>https://paypal.me/SimonNFairweather?locale.x=en_GB</DonateLink>
 <DonateImage>https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_74x21.png</DonateImage>
 <Description>
-The ipmi plugin allows you to view your system sensors and events using your ipmi hardware. Allows for local or remote access and event notification.
+The iSCSI plugin allows you to view your iSCSI config and in time to update. Currently buttons do not functon.
+
+Kernel needs to support iSCSI, see Kernel Helper by ich777
 </Description>
 <Support>https://forums.unraid.net/topic/98483-plugin-iscsi-gui/</Support>
-<Date>2020-11-01</Date>
+<Date>2020-10-28</Date>
 <Changes>
 Initial Release still WIP(Beta) Buttons don't function.
 </Changes>
+<IconFA>cogs</IconFA>
 </Containers>

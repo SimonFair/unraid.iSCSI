@@ -185,3 +185,9 @@ function filelock() {
 		return true ;
 	}
 } 
+
+function processTargetcli($cmdstr) {
+	# Write command string a process
+	# targetctl  /tmp/string > /var/run/targetcli.last
+	
+}
