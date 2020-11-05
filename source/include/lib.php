@@ -208,7 +208,7 @@ function filelock() {
 		return true ;
 	}
 }
-} 
+ 
 
 function processTargetcli($cmdstr) {
 	# Write command string a process
