@@ -22,9 +22,6 @@ define('DEFAULT_TARGETCLI_CONFIG', '{
   "targets": []
 }');
 
-#########################################################
-############         DISK FUNCTIONS         #############
-#########################################################
 
 function get_unassigned_disks() {
 	global $disks;
@@ -67,6 +64,11 @@ function get_unassigned_disks() {
 				if ($m==null && $b[$path]['type']=="rom" && $b[$path]['fstype']!='') $m=array($b[$path]) ;
            
 				if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
+				if ($defined) {
+					$k=array_search($d , array_column($LIOdevices, 'dev')) ;
+					$ro=$LIOdevices[$k]["readonly"] ;
+				}
+				  
 
 				$ud_disks[$path] = array(
 									"device"=>$d,  
@@ -81,6 +83,7 @@ function get_unassigned_disks() {
 									"size"=>$b[$path]['size'],
 									"bpartitions"=>$m,
 									"defined"=> $defined,
+									"readonly"=> $ro ,
 									"name"=>$b[$path]["name"]
 		) ;
 
@@ -184,6 +187,8 @@ function build_iscsi_initiators($tj) {
 	$parms=$tgt["parameters"] ;
 	$enable=$tgt["enable"] ;
 	$targetname=$sd["wwn"] ;
+
+#	sort($luns) ;
 	
 		return $node_acls ;
 }    
@@ -213,5 +218,10 @@ function filelock() {
 function processTargetcli($cmdstr) {
 	# Write command string a process
 	# targetctl  /tmp/string > /var/run/targetcli.last
-	
+	#exec($cmdstr  ,$tj) ;
+	echo "Command Processing......" ;
+	$cmd="targetcli ".$cmdstr."\nexit\n" ;
+	exec("echo \"$cmd\" >/tmp/cmd.last", $output, $myreturn );
+	sleep(10) ;
+  
 }

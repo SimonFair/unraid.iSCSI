@@ -14,7 +14,7 @@
 
 $new = $_GET["cfg"];
 
-$newe=explode(";", $new) ;
+$newe=$x=explode(";", $new) ;
 $newe= var_export($newe, true);
 #if ($old !== $new) {
 #  exec("cp -f /boot/config/vfio-pci.cfg /boot/config/liochg.cfg.bak");
@@ -48,10 +48,10 @@ $newe= var_export($newe, true);
   */
   #build commands array
   # /backstores/block create usb-Sony_Hard_Drive_235853211C8A-0:0 /dev/disk/by-id/usb-Sony_Hard_Drive_235853211C8A-0:0 readonly=true 
- $x=$newe ; 
- $index=20 ;
+  
+ $index=0 ;
   $type = $x[$index+1] ;
-  $name = $x[$index+2] ; 
+  $name = substr($x[$index+2] ,16) ; 
   $devexist = $x[$index+3];
   $devchange =$x[$index+4];
   $readonly = $x[$index+8] ;

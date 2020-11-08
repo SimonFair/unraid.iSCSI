@@ -1,0 +1,132 @@
+<?xml version='1.0' standalone='yes'?>
+
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "unraid.iSCSI">
+<!ENTITY author    "SimonFair">
+<!ENTITY version   "2020.11.08">
+<!ENTITY launch    "Tools/iSCSI">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
+<!ENTITY pluginURL "&gitURL;/iSCSI-dev.plg">
+<!ENTITY supportURL	"https://forums.unraid.net/">
+<!ENTITY packages	"/boot/config/plugins/&name;/packages">
+<!ENTITY MD5		"d1ce06746a0110f557166e50f05f28bf">
+]>
+
+<PLUGIN name="&name;"
+		author="&author;"
+		launch="&launch;"
+		version="&version;"
+		pluginURL="&pluginURL;"
+		support="&supportURL;"
+		icon="unlock-alt"
+		min="6.7.0">
+
+<CHANGES>
+##&name;
+###&version;
+28th Update
+
+- initial release.
+</CHANGES>
+
+<!--
+The 'pre-install' script.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+# Remove emhttp files so we can re-install.
+rm -rf /usr/local/emhttp/plugins/&name;/* 2>/dev/null
+
+# Remove old 'bundle' files.
+rm -f $(ls &packages;/*.tgz 2>/dev/null | grep -v '&version;')
+</INLINE>
+</FILE>
+
+<!--
+Get the plugin bundle.
+-->
+<FILE Name="&packages;/&name;-&version;.tgz">
+<URL>"&gitURL;/&name;-&version;.tgz"</URL>
+</FILE>
+
+
+<!--
+The 'post-install' script.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+# Install the plugin bundle.
+# Create plugin directory
+mkdir /boot/config/plugins/&name; 2>/dev/null
+mkdir /usr/local/emhttp/plugins/&name; 2>/dev/null
+
+# Remove old packages
+find "&packages;/" -type f -iname "*.txz" -delete
+
+# Install the 'bundle'.
+tar -vxf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
+
+# Adjust plugin permissions.
+chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
+
+
+# Clean out old plugin packages
+find /boot/config/plugins/&name; -maxdepth 1 -type f -iname "*.t*z" -delete
+find &packages; -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
+find &packages; -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
+
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been installed."
+echo " "
+echo " Copyright 2016-2020, &author;"
+echo " Version: &version;"
+echo ""
+echo " Note:"
+echo " Install the Unassigned Devices Plus plugin if you need to"
+echo " mount exFAT or HFS+ file formats, or format disks."
+if [ $mounted_disks == "y" ]; then
+  echo ""
+  echo " PLEASE REBOOT YOUR SERVER "
+  echo ""
+fi
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!--
+The 'remove' script.
+-->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+
+# Remove installed packages
+find "&packages;/" -type f -iname "*.txz" -delete
+
+# Remove possible leftovers
+rm -rf /usr/local/emhttp/plugins/&name; \
+       \
+       &packages;
+
+rm -f /tmp/plugins/&name;.plg 
+
+
+
+# Remove all plugin files from emhttp.
+rm -rf /usr/local/emhttp/plugins/&name; 2>/dev/null
+
+
+
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been uninstalled."
+echo "-----------------------------------------------------------"
+echo ""
+
+</INLINE>
+</FILE>
+
+</PLUGIN>

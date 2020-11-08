@@ -65,7 +65,7 @@ case 'dt1':
          
         echo "</tr><tr><td>Status      Readonly\n    Selection</td><td>Device</td>" ;
          foreach ($groups[array_key_first($groups)] as $line2=>$d2) {
-          if ($line2!="devicex" && $line2!="partitions" && $line2!="unraid" && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions") {
+          if ($line2!="defined" && $line2!="partitions" && $line2!="unraid" && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions") {
             echo '<td>'.ucwords($line2)."</td>";
           }
         }
@@ -75,7 +75,7 @@ case 'dt1':
           $unraid=$device["unraid"] ;
           $defined=$device["defined"] ;
           $dname=$device["name"] ;
-          $readonly = false ;
+          $readonly = $device["readonly"];
      
           echo "</tr>" ;
           if (!$defined && !$unraid) { $colour="green" ;  $text="Device is available to be added." ;} else {$colour = "red"; $text="Already Defined." ;}
@@ -89,12 +89,12 @@ case 'dt1':
             
           echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsi'.$dname.'" value="'.$iscsiset.'" '  ;
           echo ($defined && !$unraid) ? " checked>" : ">";
-          echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsiro'.$dname.'" value="'.$iscsiro.'" '  ;
-          echo ($readonly && !$readonly) ? " checked>" : ">";
+          echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsiro'.$dname.'" value="'.$iscsiro.'" disabled  '  ;
+          echo ($readonly && !$unraid) ? " checked>" : ">";
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="devicex" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions"){
                  echo "<td>".$d2."</td>";
               }          
             }
@@ -108,7 +108,7 @@ case 'dt1':
                         }
 
             if($defined ) {
-                   $value= "ISCSI Dev:".$device["device"] ;
+                   $value= "ISCSI Dev:".substr($device["device"], 16) ;
               echo "<tr><td></td><td><td style=\"padding-left: 50px;\":>".$value."</td></tr>" ; 
             } 
           }
@@ -181,16 +181,15 @@ case 'it1':
           $iscsimapl="iscsiset;".$mapluns["tpg_lun"].';' ;
           echo "<td>" ; 
           echo '<input type="checkbox" class="iscsimapl'.$mapluns["tpg_lun"].'" value="'.$iscsimapl.'" '  ;
-           # if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
-          
+                    
             echo "</td>      Mapped to lun:".$mapluns["tpg_lun"]." (".$luns[$mapluns["tpg_lun"]]["storage_object"].")\n" ;
             echo "</td></tr>";
           }
         }
           echo '<tr></td><td><br>';
-          echo '<input id="RmvInit" type="submit"  value="'._('Remove Selected Initiator(s)').'" onclick="applyCfgInit();" '.'>';
-             echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="applyCfgInit();" '.'>';
-             echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="applyCfgMap();" '.'>';
+          echo '<input id="RmvInit" type="submit"  value="'._('Remove Selected Initiator(s) or Mapping(s)').'" onclick="removeInitMap();" '.'>';
+             echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
+             echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
              echo '<span id="warning"></span>';
              echo '</td></tr>';
   
@@ -199,12 +198,12 @@ case 'it1':
   case 'it2':
     $json=get_iscsi_json() ;
     $nodes=build_iscsi_initiators($json) ;
-    
+    sort($luns) ;
     echo "</tr><tr>" ;
     foreach ($luns as $lun) {
-      $iscsilun="iscslun;".$lun["index"].';' ;
+      $iscsilun="iscslun;".$lun["index"].';'.$lun["storage_object"] ;
       echo "<td>" ; 
-      echo '<input type="checkbox" class="iscsilun'.$lun["index"].'" value="'.$iscsimapl.'" '  ;
+      echo '<input type="checkbox" class="iscsilun'.$lun["index"].'" value="'.$iscsilun.'"'  ;
       echo "</td><td>" ; 
       echo "Lun".$lun["index"]."->".$lun["storage_object"]."</td><td>alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
       echo "</td></tr>";
@@ -212,11 +211,22 @@ case 'it1':
   
 
    echo '</td><td><br>';
-   echo '<input id="removelun" type="submit"  value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
+   echo '<input id="removelun" type="submit" disabled value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
    echo '</td><td><br>' ;
-      echo '<input id="addLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.'>';
+      echo '<input id="addLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.' disabled >';
       echo '<span id="warningLUN"></span>';
       echo '</td></tr>';
+      echo <<<EOT
+      <script>
+      $("#it2 input[type='checkbox']").change(function() {
+        var matches = document.querySelectorAll("." + this.className);
+        for (var i=0, len=matches.length|0; i<len; i=i+1|0) {
+          matches[i].checked = this.checked ? true : false;
+        }
+        $("#removelun").attr("disabled", false);
+       });
+      </script>
+      EOT;
     break;
 }
 function make_mount_button($device) {
