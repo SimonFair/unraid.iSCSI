@@ -60,7 +60,6 @@ function addLUN() {
   });
 }
 function removeLUN() {
-  document.getElementById("warningLUN").innerHTML = "<b>_(Remove Function not Implemented for LUNs)_.</b>";
   var elements = document.getElementById("iscsiluns").elements;
   var string ="/plugins/unraid.iSCSI/include/removeLUN.php?more=1&LUNS=" ;
   for (var i = 0, element; element = elements[i++];) {
@@ -70,8 +69,21 @@ function removeLUN() {
   var tgt = document.getElementById("targetname").value;
   var someValue = document.getElementById("targetname").innerHTML;
   string = string + "&tgt=" + someValue  ;
-  openBox(string,"_(Remove LUNs)_",600,600);
+  openBox(string,"_(Remove LUNs)_",600,600) ;
  }
+
+ function removeInitMap() {
+  var elements = document.getElementById("iscsiinits").elements;
+  var string ="/plugins/unraid.iSCSI/include/removeInitMap.php?more=1&INIT=" ;
+  for (var i = 0, element; element = elements[i++];) {
+    if (element.type === "checkbox" && element.value !=="" )
+    string = string + element.value +';'+ element.checked +";";
+  }
+  var tgt = document.getElementById("targetname").value;
+  var someValue = document.getElementById("targetname").innerHTML;
+  string = string + "&tgt=" + someValue  ;
+  openBox(string,"_(Remove Initiators and Maps)_",600,600) ;
+  }
  
 function testLUN() {
   document.getElementById("warningLUN").innerHTML = "<b>_(Remove Function not Implemented for LUNs)_.</b>";
@@ -82,6 +94,7 @@ function testLUN() {
   for (var i = 0, element; element = elements[i++];) {
     if (element.type === "checkbox" && element.value !=="" )
     string = string + element.value +';'+ element.checked +";";
+    parent.window.location.reload();
   }
   
 
@@ -109,4 +122,5 @@ _(LUNS)_
 
 <pre><form id="iscsiluns" onsubmit="return false"><table id='it2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
+<input type="button" value="_(Done)_" onclick="done()">
 <?endif;?>

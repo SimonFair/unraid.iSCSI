@@ -37,61 +37,52 @@ div.box{margin-top:8px;line-height:30px;margin-left:40px}
 div.closed{display:none}
 </style>
 <script src="<?autov('/webGui/javascript/translate.'.($locale?:'en_US').'.js')?>"></script>
+</head>
+<body>
+<div class="box">
+<div><span> <?=_('** Luns will be removed for each File IO removed. **')?></span>
+</div>
+<div></div>
+<div><span class="key"><?=_('File IO')?>:</span>
 <?
 
-function processLUNs($action) {
- #   $json=get_iscsi_json() ;
- #   $nodes=build_iscsi_initiators($json) ;
-    $new = $_GET["LUNS"] ;
+   # $json=get_iscsi_json() ;
+   # $nodes=build_iscsi_initiators($json) ;
+    $new = $_GET["FIO"] ;
     $newe=$x=explode(";", $new) ;
-    $tgt = $_GET["tgt"] ;
-    $tgt=strip_tags($tgt) ;
-    
+   
+    $cmd="" ;
     $c = count($newe) -1 ;
     $i = $ii = 0 ;
     do {
-       $lunindex=$newe[$i+1] ;
-       $lunaction=$newe[($i+3)] ;
-       $lunname=$newe[($i+2)] ;
+       $fioname=$newe[$i+1] ;
+       $fioaction=$newe[($i+3)] ;
+       $fiopath=$newe[($i+2)] ;
+      
        
-    if ($ii && $lunaction=="true") echo "<br><span class='key'></span>&nbsp;";
-    if ($lunaction=="true")  { print("Lun ".$lunindex."(".$lunname.")")  ; $ii++ ; }
+    if ($ii && $fioaction=="true") echo "<br><span class='key'></span>&nbsp;";
+    if ($fioaction=="true")  { print("Fileio Name:".$fioname."=>".$fiopath)  ; $ii++ ; }
     
     
-    if ($lunaction=="true")   $cmd=$cmd."/iscsi/".$tgt."/tpg1/luns/ delete ".$lunindex."\n" ;
+    if ($fioaction=="true")   $cmd=$cmd."/backstores/fileio/ delete ".$fioname."\n" ;
 
     $i=$i+4 ;
     } while ($i<$c) ;
 
     echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
-    }
-?>
-</head>
-<body>
-<div class="box">
-<?
-$tgt = $_GET["tgt"] ;
-?>
-<div><span class="key"><?=_('TGT')?>:</span>
-<?
-echo $tgt ;
-?>
-</div>
-<div><div><span class="key"><?=_('LUNS')?>:</span>
-<?
-processLUNs("print") ;
+    
 ?>
 </div>
 <div style="margin-top:24px;margin-bottom:12px"><span class="key"></span>
 <input type="button" value="<?=_('Cancel')?>" onclick="top.Shadowbox.close()">
-<input type="button" value="<?=_('Confirm')?>" onclick="removelun()">
+<input type="button" value="<?=_('Confirm')?>" onclick="removeFIO()">
 
 
 </div></div>
 
 <script type="text/javascript" src="<?autov('/webGui/javascript/dynamix.js')?>"></script>
 <script>
-function removelun(){
+function removeFIO(){
     var string = document.getElementById('cmds').value ;
     $.get( "/plugins/unraid.iSCSI/include/processCommands.php", { cmd: string } )
     .done(function(d) {

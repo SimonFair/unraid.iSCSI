@@ -36,26 +36,17 @@ table tr td.thin{line-height:8px;height:8px}
 $(function(){
 $('#dt1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'dt1'});  
 });
+
+
 function applyCfgDev() {
-  document.getElementById("warningDev").innerHTML = "<b>_(Function not Implemented for Devices)_.</b>";
-  var message = "_(System Devices)_: _(A reboot is required to apply changes)_";
   var elements = document.getElementById("iscsidev").elements;
-  var string ="" ;
+  var string ="/plugins/unraid.iSCSI/include/updateblockdevices.php?DEV=" ;
   for (var i = 0, element; element = elements[i++];) {
     if (element.type === "checkbox" && element.value !=="" )
     string = string + element.value +';'+ element.checked +";";
   }
 
-  $.get( "/plugins/unraid.iSCSI/include/blockdevice.php", { cfg: string } )
-  .done(function(d) {
-    if (d==1) {
-      addRebootNotice(message);
-      document.getElementById("warningDev").innerHTML = "<b>_(ALERT)_: _(Changes saved)_. _(Reboot to take effect)_.</b>";
-    } else {
-      removeRebootNotice(message);
-      document.getElementById("warningDev").innerHTML = "<b>_(No changes)_.</b>";
-    }
-  });
+  openBox(string,"_(Update Block Devices)_",600,800) ;
 }
 </script>
 

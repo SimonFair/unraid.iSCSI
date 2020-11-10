@@ -37,61 +37,84 @@ div.box{margin-top:8px;line-height:30px;margin-left:40px}
 div.closed{display:none}
 </style>
 <script src="<?autov('/webGui/javascript/translate.'.($locale?:'en_US').'.js')?>"></script>
-<?
-
-function processLUNs($action) {
- #   $json=get_iscsi_json() ;
- #   $nodes=build_iscsi_initiators($json) ;
-    $new = $_GET["LUNS"] ;
-    $newe=$x=explode(";", $new) ;
-    $tgt = $_GET["tgt"] ;
-    $tgt=strip_tags($tgt) ;
-    
-    $c = count($newe) -1 ;
-    $i = $ii = 0 ;
-    do {
-       $lunindex=$newe[$i+1] ;
-       $lunaction=$newe[($i+3)] ;
-       $lunname=$newe[($i+2)] ;
-       
-    if ($ii && $lunaction=="true") echo "<br><span class='key'></span>&nbsp;";
-    if ($lunaction=="true")  { print("Lun ".$lunindex."(".$lunname.")")  ; $ii++ ; }
-    
-    
-    if ($lunaction=="true")   $cmd=$cmd."/iscsi/".$tgt."/tpg1/luns/ delete ".$lunindex."\n" ;
-
-    $i=$i+4 ;
-    } while ($i<$c) ;
-
-    echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
-    }
-?>
 </head>
 <body>
 <div class="box">
+<div></div>
+<div><span class="key"><?=_('SCSI Devices')?>:</span>
 <?
-$tgt = $_GET["tgt"] ;
-?>
-<div><span class="key"><?=_('TGT')?>:</span>
-<?
-echo $tgt ;
-?>
-</div>
-<div><div><span class="key"><?=_('LUNS')?>:</span>
-<?
-processLUNs("print") ;
+function processTargetcli($cmdstr) {
+    echo "Command Processing......" ;
+    $cmd=$cmdstr."\nexit\n"  ;
+    exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
+	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
+    exec("echo \"$cmd\" >/tmp/cmd.last", $output, $myreturn );
+    exec($cmd, $output, $return) ;
+}
+
+    $new = $_GET["DEV"] ;
+    $newe=$x=explode(";", $new) ;
+    #echo var_dump($x) ;
+    $cmd="" ;
+    $c = count($newe) -1 ;
+    $i = $ii = 0 ;
+    do {
+       
+    $devtype=$newe[$i+1] ;
+    $devbyid=$newe[($i+2)] ;
+    $devexist=$newe[($i+3)] ;
+    $devchange=$newe[($i+4)] ;
+    $devro=$newe[($i+8)] ;
+    $devrochange=$newe[($i+9)] ;
+    $devname=substr($devbyid, 16) ;
+    $delete=false ;  
+       
+    if ($ii) echo "<br><span class='key'></span>&nbsp;";
+    if ($devexist=="true" && $devchange =="false")  { 
+        print("Device:".$devname."=>".$fiopath)  ; 
+        $ii++ ;
+    
+        if ($devtype=="disk")   $cmd=$cmd."/backstores/block/ delete ".$devname."\n" ;
+        if ($devtype=="rom")   $cmd=$cmd."/backstores/pscsi/ delete ".$devname."\n" ;
+        $delete = true ;
+    }
+    
+    
+    if ($fioaction=="true")   $cmd=$cmd."/backstores/fileio/ delete ".$fioname."\n" ;
+    if ($devexist=="false" && $devchange=="true" && $devtype=="disk")   $cmd=$cmd."/backstores/block/ create ".$devname." ".$devbyid." readonly=".$devrochange."\n" ;
+    if ($devexist=="false" && $devchange=="true" && $devtype=="rom")   $cmd=$cmd."/backstores/pscsi/ create ".$devname." ".$devbyid."\n" ;
+
+        
+    $i=$i+10 ;
+    } while ($i<$c) ;
+
+    echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
+    echo "<br><span class='key'></span>&nbsp;";
+    if ($delete==false) { 
+        echo "Processing Adds" ;
+        processTargetcli($cmd) ;
+        echo <<<EOT
+        <script>
+        parent.window.location.reload() ;
+        </script>
+        EOT;
+    }
+    
 ?>
 </div>
 <div style="margin-top:24px;margin-bottom:12px"><span class="key"></span>
-<input type="button" value="<?=_('Cancel')?>" onclick="top.Shadowbox.close()">
-<input type="button" value="<?=_('Confirm')?>" onclick="removelun()">
-
+<?
+if ( $delete)  {
+echo '<input type="button" value="<?=_('.'Cancel'.')?>" onclick="top.Shadowbox.close()">' ;
+echo '<input type="button" value="<?=_('.'Confirm'.')?>" onclick="updateDevs()">' ;
+}
+?>
 
 </div></div>
 
 <script type="text/javascript" src="<?autov('/webGui/javascript/dynamix.js')?>"></script>
 <script>
-function removelun(){
+function updateDevs(){
     var string = document.getElementById('cmds').value ;
     $.get( "/plugins/unraid.iSCSI/include/processCommands.php", { cmd: string } )
     .done(function(d) {

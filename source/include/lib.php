@@ -214,14 +214,7 @@ function filelock() {
 	}
 }
  
-
-function processTargetcli($cmdstr) {
-	# Write command string a process
-	# targetctl  /tmp/string > /var/run/targetcli.last
-	#exec($cmdstr  ,$tj) ;
-	echo "Command Processing......" ;
-	$cmd="targetcli ".$cmdstr."\nexit\n" ;
-	exec("echo \"$cmd\" >/tmp/cmd.last", $output, $myreturn );
-	sleep(10) ;
-  
+function alert($msg) {
+    echo "<script type='text/javascript'>alert('$msg');</script>";
 }
+

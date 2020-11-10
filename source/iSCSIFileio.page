@@ -42,6 +42,19 @@ table tr td.thin{line-height:8px;height:8px}
 $(function(){
 $('#ft1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'ft1'});
 });
+
+function removeFIO() {
+  var elements = document.getElementById("iscsifio").elements;
+  var string ="/plugins/unraid.iSCSI/include/removeFileIO.php?FIO=" ;
+  for (var i = 0, element; element = elements[i++];) {
+    if (element.type === "checkbox" && element.value !=="" )
+    string = string + element.value +';'+ element.checked +";";
+  }
+  openBox(string,"_(Remove File IO)_",600,800) ;
+}
+
+ 
+   
 </script>
 
 
@@ -50,7 +63,7 @@ _(File IO Volumes)_
 
 
 
-<pre><table id='ft1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
+<pre><form id="iscsifio" onsubmit="return false"><table id='ft1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
 <input type="button" value="_(Done)_" onclick="done()">
 

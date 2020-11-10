@@ -37,35 +37,6 @@ div.box{margin-top:8px;line-height:30px;margin-left:40px}
 div.closed{display:none}
 </style>
 <script src="<?autov('/webGui/javascript/translate.'.($locale?:'en_US').'.js')?>"></script>
-<?
-
-function processLUNs($action) {
- #   $json=get_iscsi_json() ;
- #   $nodes=build_iscsi_initiators($json) ;
-    $new = $_GET["LUNS"] ;
-    $newe=$x=explode(";", $new) ;
-    $tgt = $_GET["tgt"] ;
-    $tgt=strip_tags($tgt) ;
-    
-    $c = count($newe) -1 ;
-    $i = $ii = 0 ;
-    do {
-       $lunindex=$newe[$i+1] ;
-       $lunaction=$newe[($i+3)] ;
-       $lunname=$newe[($i+2)] ;
-       
-    if ($ii && $lunaction=="true") echo "<br><span class='key'></span>&nbsp;";
-    if ($lunaction=="true")  { print("Lun ".$lunindex."(".$lunname.")")  ; $ii++ ; }
-    
-    
-    if ($lunaction=="true")   $cmd=$cmd."/iscsi/".$tgt."/tpg1/luns/ delete ".$lunindex."\n" ;
-
-    $i=$i+4 ;
-    } while ($i<$c) ;
-
-    echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
-    }
-?>
 </head>
 <body>
 <div class="box">
@@ -76,22 +47,59 @@ $tgt = $_GET["tgt"] ;
 <?
 echo $tgt ;
 ?>
+<div></div>
+<div><span> <?=_('** All Maps will be removed for selected iqn(s). **')?></span>
 </div>
-<div><div><span class="key"><?=_('LUNS')?>:</span>
+<div><span class="key"><?=_('Initiators or Map')?>:</span>
 <?
-processLUNs("print") ;
+
+   # $json=get_iscsi_json() ;
+   # $nodes=build_iscsi_initiators($json) ;
+    $new = $_GET["INIT"] ;
+    $newe=$x=explode(";", $new) ;
+    $tgt = $_GET["tgt"] ;
+    $tgt=strip_tags($tgt) ;
+    $previqn="" ;
+    $cmd="" ;
+    $c = count($newe) -1 ;
+    $i = $ii = 0 ;
+    do {
+       $inittype=$newe[$i] ;
+       $initname=$initmap=$newe[$i+1] ;
+       $initaction=$newe[($i+3)] ;
+       $initmapiqn=$newe[($i+2)] ;
+      
+       
+    if ($ii && ($initaction=="true" && $initmapiqn != $previqn))   echo "<br><span class='key'></span>&nbsp;";
+    if ($initaction=="true" && $inittype =="iscsiiqn")  { 
+        print("iqn Name:".$initname)  ; 
+        $ii++ ; 
+        $cmd=$cmd."/iscsi/".$tgt."/tpg1/acls/".$initmapiqn." delete ".$initname."\n" ;
+        $previqn=$initname ;
+      }
+    if ($initaction=="true" && $inittype =="iscsimap" && $initmapiqn != $previqn)  { 
+      print("Map number:".$initmap." for iqn:".$initmapiqn) ; 
+      $ii++ ;
+      $cmd=$cmd."/iscsi/".$tgt."/tpg1/acls/".$initmapiqn."/ delete ".$initmap."\n" ;
+     }
+  
+    
+    $i=$i+4 ;
+    } while ($i<$c) ;
+
+    echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
 ?>
 </div>
 <div style="margin-top:24px;margin-bottom:12px"><span class="key"></span>
 <input type="button" value="<?=_('Cancel')?>" onclick="top.Shadowbox.close()">
-<input type="button" value="<?=_('Confirm')?>" onclick="removelun()">
+<input type="button" value="<?=_('Confirm')?>" onclick="removeFIO()">
 
 
 </div></div>
 
 <script type="text/javascript" src="<?autov('/webGui/javascript/dynamix.js')?>"></script>
 <script>
-function removelun(){
+function removeFIO(){
     var string = document.getElementById('cmds').value ;
     $.get( "/plugins/unraid.iSCSI/include/processCommands.php", { cmd: string } )
     .done(function(d) {

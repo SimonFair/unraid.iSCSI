@@ -115,7 +115,7 @@ case 'dt1':
             echo "</td></tr>" ;
           }
     $noiommu=false ;
-    echo '<tr><td></td><td></td><td><br>';
+    echo '<tr><td><br>';
     echo '<input id="applycfg" type="submit" disabled value="'._('Add/Remove as Selected').'" onclick="applyCfgDev();" '.'>';
     echo '<span id="warningDev"></span>';
     echo '</td></tr>';
@@ -142,22 +142,32 @@ EOT;
   echo "</tr><tr>" ;
  foreach ($LIOdevices as $fileio) {
    if ($fileio["plugin"] == "fileio") {
-   $iscsifio="iscslun;".$fileio["name"].';' ;
-   echo "<td>" ; 
-   echo '<input type="checkbox" class="iscsilun'.$lun["index"].'" value="'.$iscsimapl.'" '  ;
+   $iscsifio="iscsifio;".$fileio["name"].';'.$fileio["dev"] ;
+   echo "<td>" ;
+   echo '<input type="checkbox" class="'.$fileio["name"].'" value="'.$iscsifio.'" '  ;
    echo "</td><td>" ; 
      echo $fileio["name"]."=>".$fileio["dev"]."</td><td>Write Back:".($fileio["write_back"] ? "true" : "false")."</td><td>Size:".$fileio["size"]."</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>" ;
  }
  }
  echo '<tr><td><br>' ;
-            echo '<input id="addInit" type="submit"  value="'._('Add new FileIO').'" onclick="addFileIO();" '.'>';
+            echo '<input id="removeFileIO" disabled type="submit"  value="'._('Remove Fileio').'" onclick="removeFIO();" '.'>';
             echo "</td><td><br>" ; 
-            echo '<input id="addMap" type="submit"  value="'._('Remove Fileio').'" onclick="removeFileIO();" '.'>';
+            echo '<input id="addFileio" type="submit"  disabled value="'._('Add new FileIO').'" onclick="addFIO();" '.'>';
             echo '<span id="warning"></span>';
             echo '</td><td>';
             echo '</td></tr>';
- 
- break;  
+            echo <<<EOT
+            <script>
+            $("#ft1 input[type='checkbox']").change(function() {
+              var matches = document.querySelectorAll("." + this.className);
+              for (var i=0, len=matches.length|0; i<len; i=i+1|0) {
+                matches[i].checked = this.checked ? true : false;
+              }
+              $("#removeFileIO").attr("disabled", false);
+             });
+            </script>
+            EOT;
+  break;  
 
 # Initiators ign and mapped LUNS
 case 'it1':
@@ -169,16 +179,16 @@ case 'it1':
    
    echo '<script type="text/javascript"> document.getElementById("targetname").innerHTML =  "<b>'.$targetname.'</b>"</script>';
    echo "</tr><tr>" ;
-  
+  $i=1 ;
   foreach ($nodes as $init) {
     #if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
     $iscsiiqn="iscsiiqn;".$init["node_wwn"].';' ;
-    echo '<td><input type="checkbox" class="iscsimapl'.$iscsiign.'" value="'.$iscsiiqn.'" </td>'  ;
+    echo '<td><input type="checkbox" class="iscsiiqn'.$i++.'" value="'.$iscsiiqn.'" </td>'  ;
       echo $init["node_wwn"]." Mapped Luns:".count($init["mapped_luns"])." Attributes ".count($init["attributes"])."\n" ;
         foreach ($init["mapped_luns"] as $mapluns) 
           {
             
-          $iscsimapl="iscsiset;".$mapluns["tpg_lun"].';' ;
+          $iscsimapl="iscsimap;".$mapluns["index"].';'.$init["node_wwn"] ;
           echo "<td>" ; 
           echo '<input type="checkbox" class="iscsimapl'.$mapluns["tpg_lun"].'" value="'.$iscsimapl.'" '  ;
                     
@@ -187,11 +197,22 @@ case 'it1':
           }
         }
           echo '<tr></td><td><br>';
-          echo '<input id="RmvInit" type="submit"  value="'._('Remove Selected Initiator(s) or Mapping(s)').'" onclick="removeInitMap();" '.'>';
+          echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Initiator(s) or Mapping(s)').'" onclick="removeInitMap();" '.'>';
              echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
              echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
              echo '<span id="warning"></span>';
              echo '</td></tr>';
+             echo <<<EOT
+<script>
+$("#it1 input[type='checkbox']").change(function() {
+  var matches = document.querySelectorAll("." + this.className);
+  for (var i=0, len=matches.length|0; i<len; i=i+1|0) {
+    matches[i].checked = this.checked ? true : false;
+  }
+  $("#RmvInit").attr("disabled", false);
+ });
+</script>
+EOT;
   
   break;  
   # Initiator Tab LUNS
