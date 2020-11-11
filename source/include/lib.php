@@ -9,7 +9,7 @@
  * all copies or substantial portions of the Software.
  */
 
-$plugin = "unassigned.devices";
+$plugin = "unraid.iSCSI";
 $docroot = $docroot ?: @$_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
 $disks = @parse_ini_file("$docroot/state/disks.ini", true);
 $VERBOSE=FALSE; 

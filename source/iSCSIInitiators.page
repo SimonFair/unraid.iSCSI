@@ -22,7 +22,7 @@ require_once "$docroot/plugins/$plugin/include/Legacy.php";
 <?else:?>
 <?
 /* read translations */
-parse_plugin('unraidiscsi');
+parse_plugin('unraid.iSCSI');
 ?>
 
 <style>
