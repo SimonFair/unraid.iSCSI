@@ -58,8 +58,6 @@ function applyCfgDev() {
     var checked = element.checked ;
     
     if (type === "iscsiset" && current === "true" && checked === false) {
-       alert(checked) ;
-          alert("Delete is yes") ;
          optdel = 1 ;
     
     }
@@ -68,7 +66,7 @@ function applyCfgDev() {
 if (optdel === 1)
   {
   string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove='No'&DEV=" + string ; 
-  openBox(string,"_(Update Block Devices)_",600,800) ;
+  openBox(string,"_(Remove Block Devices)_",600,800) ;
   }
   else {
       $.get( "/plugins/unraid.iSCSI/include/updateblockdevices.php", { Remove: "No", DEV: string } ) 

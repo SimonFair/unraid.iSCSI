@@ -61,7 +61,7 @@ div.closed{display:none}
       
        
     if ($ii && $fioaction=="true") echo "<br><span class='key'></span>&nbsp;";
-    if ($fioaction=="true")  { print("Fileio Name:".$fioname."=>".$fiopath)  ; $ii++ ; }
+    if ($fioaction=="true")  { print("Name:".$fioname."=>".$fiopath)  ; $ii++ ; }
     
     
     if ($fioaction=="true")   $cmd=$cmd."/backstores/fileio/ delete ".$fioname."\n" ;

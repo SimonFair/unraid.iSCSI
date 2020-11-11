@@ -71,7 +71,7 @@ function processTargetcli($cmdstr) {
        
     if ($ii) echo "<br><span class='key'></span>&nbsp;";
     if ($devexist=="true" && $devchange =="false")  { 
-        print("Device:".$devname."=>".$fiopath)  ; 
+        print($devname)  ; 
         $ii++ ;
     
         if ($devtype=="disk")   $cmd=$cmd."/backstores/block/ delete ".$devname."\n" ;

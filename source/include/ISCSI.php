@@ -23,6 +23,10 @@ if ($translations) {
 }
 
 require_once "plugins/unraid.iSCSI/include/lib.php";
+require_once("webGui/include/Helpers.php");
+
+$unraid = parse_plugin_cfg("dynamix",true);
+$display = $unraid["display"];
 
 switch ($_POST['table']) {
 // dt = Device Tab Tables  
@@ -65,7 +69,7 @@ case 'dt1':
          
         echo "</tr><tr><td>Status      Readonly\n    Selection</td><td>Device</td>" ;
          foreach ($groups[array_key_first($groups)] as $line2=>$d2) {
-          if ($line2!="defined" && $line2!="partitions" && $line2!="unraid" && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions") {
+          if ($line2!="defined" && $line2!="partitions" && $line2!="unraid" && $line2!="definedx" && $line2!="by-id" && $line2!="bpartitions" && $line2!="readonly" && $line2!="name") {
             echo '<td>'.ucwords($line2)."</td>";
           }
         }
@@ -86,15 +90,16 @@ case 'dt1':
 
           $iscsiset="iscsiset;".$device["type"].';'.$device["device"].';'.($defined ? "true" : "false") ;
           $iscsiro="iscsiro;".$device["type"].';'.$device["device"].';'.($readonly ? "true" : "false") ;
+          if ($device["type"]=="rom") $rodisabled=" disabled " ; else $rodisabled="" ;
             
           echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsi'.$dname.'" value="'.$iscsiset.'" '  ;
           echo ($defined && !$unraid) ? " checked>" : ">";
-          echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsiro'.$dname.'" value="'.$iscsiro.'" disabled  '  ;
+          echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsiro'.$dname.'" value="'.$iscsiro.'"'.$rodisabled  ;
           echo ($readonly && !$unraid) ? " checked>" : ">";
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="name"){
                  echo "<td>".$d2."</td>";
               }          
             }
@@ -138,20 +143,20 @@ EOT;
    
   $json=get_iscsi_json() ;
   $LIOdevices=build_iscsi_devices($json) ;
-  
+  var_dump($display) ;
   echo "</tr><tr>" ;
  foreach ($LIOdevices as $fileio) {
    if ($fileio["plugin"] == "fileio") {
    $iscsifio="iscsifio;".$fileio["name"].';'.$fileio["dev"] ;
    echo "<td>" ;
-   echo '<input type="checkbox" class="'.$fileio["name"].'" value="'.$iscsifio.'" '  ;
-   echo "</td><td>" ; 
-     echo $fileio["name"]."=>".$fileio["dev"]."</td><td>Write Back:".($fileio["write_back"] ? "true" : "false")."</td><td>Size:".$fileio["size"]."</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>" ;
+   echo '<input type="checkbox" class="'.$fileio["name"].'" value="'.$iscsifio.'" </input>     '  ;
+   # echo "</td><td>" ; 
+     echo $fileio["name"]."=>".str_pad($fileio["dev"],50)."</td><td>Write Back:".($fileio["write_back"] ? str_pad("true",10) : str_pad("false",10))."  Size:".my_scale($fileio["size"], $unit)." $unit"."</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>" ;
  }
  }
  echo '<tr><td><br>' ;
             echo '<input id="removeFileIO" disabled type="submit"  value="'._('Remove Fileio').'" onclick="removeFIO();" '.'>';
-            echo "</td><td><br>" ; 
+      #      echo "</td><td><br>" ; 
             echo '<input id="addFileio" type="submit"  disabled value="'._('Add new FileIO').'" onclick="addFIO();" '.'>';
             echo '<span id="warning"></span>';
             echo '</td><td>';
@@ -224,16 +229,16 @@ EOT;
     foreach ($luns as $lun) {
       $iscsilun="iscslun;".$lun["index"].';'.$lun["storage_object"] ;
       echo "<td>" ; 
-      echo '<input type="checkbox" class="iscsilun'.$lun["index"].'" value="'.$iscsilun.'"'  ;
-      echo "</td><td>" ; 
-      echo "Lun".$lun["index"]."->".$lun["storage_object"]."</td><td>alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
+      echo '<input type="checkbox" class="iscsilun'.$lun["index"].'" value="'.$iscsilun.'"</input>'  ;
+      
+      echo "   Lun".$lun["index"]."->".str_pad($lun["storage_object"], 50)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
       echo "</td></tr>";
     }
   
 
    echo '</td><td><br>';
    echo '<input id="removelun" type="submit" disabled value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
-   echo '</td><td><br>' ;
+   # echo '</td><td><br>' ;
       echo '<input id="addLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.' disabled >';
       echo '<span id="warningLUN"></span>';
       echo '</td></tr>';

@@ -69,8 +69,9 @@ echo $tgt ;
        $initaction=$newe[($i+3)] ;
        $initmapiqn=$newe[($i+2)] ;
       
-       
-    if ($ii && ($initaction=="true" && $initmapiqn != $previqn))   echo "<br><span class='key'></span>&nbsp;";
+      
+    if ($ii && ($initaction=="true" && $initmapiqn != $previqn && $inittype!="iscsiiqn"))   echo "<br><span class='key'></span>&nbsp;";
+    if ($ii && ($initaction=="true" && $inittype=="iscsiiqn"))   echo "<br><span class='key'></span>&nbsp;";
     if ($initaction=="true" && $inittype =="iscsiiqn")  { 
         print("iqn Name:".$initname)  ; 
         $ii++ ; 
