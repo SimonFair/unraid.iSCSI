@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "unraid.iSCSI">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2020.10.28">
+<!ENTITY version   "2020.11,11">
 <!ENTITY launch    "Tools/iSCSI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL "&gitURL;/iSCSI.plg">
@@ -64,7 +64,7 @@ mkdir /usr/local/emhttp/plugins/&name; 2>/dev/null
 find "&packages;/" -type f -iname "*.txz" -delete
 
 # Install the 'bundle'.
-tar -vxf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
+tar -xf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
 
 # Adjust plugin permissions.
 chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
