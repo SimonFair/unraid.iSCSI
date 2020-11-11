@@ -1,4 +1,5 @@
 Menu="Tools"
 Title="iSCSI"
 Type="menu"
+Cond="exec('modinfo configfs')"
 ---

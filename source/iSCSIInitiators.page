@@ -23,6 +23,15 @@ require_once "$docroot/plugins/$plugin/include/Legacy.php";
 <?
 /* read translations */
 parse_plugin('unraid.iSCSI');
+if ($fl === 2)
+ {
+  echo "<p class='notice shift'>"._('Kernel Options not installed.').".</p>";
+   return;
+ }
+if (!$fl) {
+  echo "<p class='notice shift'>"._('Targetcli in use unable to read status and config.').".</p>";
+  return;
+} 
 ?>
 
 <style>

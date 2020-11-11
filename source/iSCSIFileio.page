@@ -1,7 +1,7 @@
 Menu="iSCSITools:4"
 Title="FileIO"
 Tag="file"
-Cond="file_exists('/var/run/iscsi.tab')"
+Cond="$fl !=1 ;"
 ---
 <?PHP
 /* Copyright 2020-2020, Simon Fairweather
@@ -24,6 +24,16 @@ require_once "$docroot/plugins/$plugin/include/Legacy.php";
 <?
 /* read translations */
 parse_plugin('unraid.iSCSI');
+if ($fl === 2)
+ {
+  echo "<p class='notice shift'>"._('Kernel Options not installed.').".</p>";
+   return;
+ }
+if (!$fl) {
+  echo "<p class='notice shift'>"._('Targetcli in use unable to read status and config.').".</p>";
+  return;
+} 
+?>
 ?>
 
 

@@ -195,6 +195,8 @@ function build_iscsi_initiators($tj) {
 
 function filelock() {
 	// file_exists (string $filename ) : bool
+    if (!exec('modinfo configfs',$output, $return)) return(2) ;
+
 	$fp = fopen('/var/run/targetcli.lock', 'w');
     if (!flock($fp, LOCK_EX|LOCK_NB, $wouldblock)) {
 		if ($wouldblock) {
@@ -205,10 +207,6 @@ function filelock() {
 		}
 	}
 	else {
-		fclose($fp) ;
-		
-		$fp = fopen('/var/run/iscsi.tab', 'w');
-		fwrite($fp, '1');
 		fclose($fp) ;
 		return true ;
 	}

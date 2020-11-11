@@ -17,10 +17,10 @@ function processTargetcli($cmdstr) {
     $cmd=$cmdstr."\nexit\n"  ;
     exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
 	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
-    exec("echo \"$cmd\" >/tmp/cmd.last", $output, $myreturn );
+    
     exec($cmd, $output, $return) ;
-
-  
+    $v=var_dump($output) ;
+    exec("echo \"$v\" >/tmp/cmd.last");
 }
 $cmd = $_GET["cmd"] ;
 processTargetcli($cmd) ;

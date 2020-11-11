@@ -22,9 +22,17 @@ require_once "$docroot/plugins/$plugin/include/Legacy.php";
 <?else:?>
 <?
 /* read translations */
-parse_plugin('unraid.iSCSI);
+parse_plugin('unraid.iSCSI');
+if ($fl === 2)
+ {
+  echo "<p class='notice shift'>"._('Kernel Options not installed.').".</p>";
+   return;
+ }
+if (!$fl) {
+  echo "<p class='notice shift'>"._('Targetcli in use unable to read status and config.').".</p>";
+  return;
+} 
 ?>
-
 <style>
 table.pre{margin-top:0;background:transparent}
 table.pre td:first-child{width:144px}
@@ -37,16 +45,39 @@ $(function(){
 $('#dt1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'dt1'});  
 });
 
-
+var optdel=0 ;
 function applyCfgDev() {
   var elements = document.getElementById("iscsidev").elements;
-  var string ="/plugins/unraid.iSCSI/include/updateblockdevices.php?DEV=" ;
+  var string ="" ;
   for (var i = 0, element; element = elements[i++];) {
-    if (element.type === "checkbox" && element.value !=="" )
+    if (element.type === "checkbox" && element.value !=="" ) {
     string = string + element.value +';'+ element.checked +";";
+    var values=element.value.split(";")
+    var current=values[3] ;
+    var type=values[0];
+    var checked = element.checked ;
+    
+    if (type === "iscsiset" && current === "true" && checked === false) {
+       alert(checked) ;
+          alert("Delete is yes") ;
+         optdel = 1 ;
+    
+    }
+    }
   }
-
+if (optdel === 1)
+  {
+  string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove='No'&DEV=" + string ; 
   openBox(string,"_(Update Block Devices)_",600,800) ;
+  }
+  else {
+      $.get( "/plugins/unraid.iSCSI/include/updateblockdevices.php", { Remove: "No", DEV: string } ) 
+      .done(function(d) {
+              parent.window.location.reload();
+  });
+      
+   }
+
 }
 </script>
 

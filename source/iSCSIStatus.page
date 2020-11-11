@@ -1,6 +1,7 @@
 Menu="iSCSITools:1"
 Title="Status"
 Tag="iscsi"
+
 ---
 <?PHP
 /* Copyright 2020-2020, Simon Fairweather
@@ -24,18 +25,25 @@ require_once "$docroot/plugins/$plugin/include/lib.php";
 <?else:?>
 <?
 /* read translations */
-parse_plugin('unraidiscsi');
+parse_plugin('unraid.iscsi');
 $iscsitab = false ;
 if ($var['fsState'] != "Started") {
   echo "<div class='notice shift'>"._('Array must be **started** to view iSCSI Information').".</div>";
   return ;
 } 
-if (!filelock()) {
+
+$fl=filelock() ;
+
+if ($fl === 2)
+ {
+  echo "<p class='notice shift'>"._('Kernel Options not installed.').".</p>";
+   return;
+ }
+if (!$fl) {
   echo "<p class='notice shift'>"._('Targetcli in use unable to read status and config.').".</p>";
-  $tabbed = true ;
   return;
 } 
-$iscsitab = true ;
+$iscsitab = $tabbed = true ;
 ?>
 
 <style>

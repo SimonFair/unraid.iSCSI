@@ -53,8 +53,8 @@ function processTargetcli($cmdstr) {
 }
 
     $new = $_GET["DEV"] ;
+    $delete =$_GET["Remove"] ;
     $newe=$x=explode(";", $new) ;
-    #echo var_dump($x) ;
     $cmd="" ;
     $c = count($newe) -1 ;
     $i = $ii = 0 ;
@@ -67,7 +67,7 @@ function processTargetcli($cmdstr) {
     $devro=$newe[($i+8)] ;
     $devrochange=$newe[($i+9)] ;
     $devname=substr($devbyid, 16) ;
-    $delete=false ;  
+    
        
     if ($ii) echo "<br><span class='key'></span>&nbsp;";
     if ($devexist=="true" && $devchange =="false")  { 
@@ -76,8 +76,7 @@ function processTargetcli($cmdstr) {
     
         if ($devtype=="disk")   $cmd=$cmd."/backstores/block/ delete ".$devname."\n" ;
         if ($devtype=="rom")   $cmd=$cmd."/backstores/pscsi/ delete ".$devname."\n" ;
-        $delete = true ;
-    }
+         }
     
     
     if ($fioaction=="true")   $cmd=$cmd."/backstores/fileio/ delete ".$fioname."\n" ;
@@ -90,28 +89,16 @@ function processTargetcli($cmdstr) {
 
     echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
     echo "<br><span class='key'></span>&nbsp;";
-    if ($delete==false) { 
-        echo "Processing Adds" ;
+    if ($delete=="No") { 
         processTargetcli($cmd) ;
-        echo <<<EOT
-        <script>
-        parent.window.location.reload() ;
-        </script>
-        EOT;
     }
     
 ?>
 </div>
 <div style="margin-top:24px;margin-bottom:12px"><span class="key"></span>
-<?
-if ( $delete)  {
-echo '<input type="button" value="<?=_('.'Cancel'.')?>" onclick="top.Shadowbox.close()">' ;
-echo '<input type="button" value="<?=_('.'Confirm'.')?>" onclick="updateDevs()">' ;
-}
-?>
-
+<input type="button" value="<?=_('Cancel')?>" onclick="top.Shadowbox.close()">
+<input type="button" value="<?=_('Confirm')?>" onclick="updateDevs()">
 </div></div>
-
 <script type="text/javascript" src="<?autov('/webGui/javascript/dynamix.js')?>"></script>
 <script>
 function updateDevs(){
@@ -121,9 +108,7 @@ function updateDevs(){
         parent.window.location.reload();
     }
   );
-   
 }
-
 </script>
 </body>
 </html>
