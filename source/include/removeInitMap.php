@@ -40,52 +40,50 @@ div.closed{display:none}
 </head>
 <body>
 <div class="box">
-<?
-$tgt = $_GET["tgt"] ;
-?>
-<div><span class="key"><?=_('TGT')?>:</span>
-<?
-echo $tgt ;
-?>
 <div></div>
-<div><span> <?=_('** All Maps will be removed for selected iqn(s). **')?></span>
+<div><span> <?=_('** All lower entries will be removed for selected higher level. **')?></span>
 </div>
-<div><span class="key"><?=_('Initiators or Map')?>:</span>
 <?
 
    # $json=get_iscsi_json() ;
    # $nodes=build_iscsi_initiators($json) ;
     $new = $_GET["INIT"] ;
     $newe=$x=explode(";", $new) ;
-    $tgt = $_GET["tgt"] ;
-    $tgt=strip_tags($tgt) ;
-    $previqn="" ;
+    $previqn=$prevtgt="" ;
     $cmd="" ;
     $c = count($newe) -1 ;
     $i = $ii = 0 ;
-    do {
+        do {
        $inittype=$newe[$i] ;
        $initname=$initmap=$newe[$i+1] ;
-       $initaction=$newe[($i+3)] ;
-       $initmapiqn=$newe[($i+2)] ;
+       $initaction=$newe[($i+4)] ;
+       $iqntgtname=$initmapiqn=$newe[($i+2)] ;
+       $maptgtname=$newe[($i+3)] ;
       
-      
-    if ($ii && ($initaction=="true" && $initmapiqn != $previqn && $inittype!="iscsiiqn"))   echo "<br><span class='key'></span>&nbsp;";
-    if ($ii && ($initaction=="true" && $inittype=="iscsiiqn"))   echo "<br><span class='key'></span>&nbsp;";
-    if ($initaction=="true" && $inittype =="iscsiiqn")  { 
+
+    if ($initaction=="true" && $inittype =="iscsiiqn" && $iqntgtname != $prevtgt  )  { 
+       echo '<div><div><span class="key"></span>';
         print("iqn Name:".$initname)  ; 
         $ii++ ; 
-        $cmd=$cmd."/iscsi/".$tgt."/tpg1/acls/".$initmapiqn." delete ".$initname."\n" ;
+        $cmd=$cmd."/iscsi/".$iqntgtname."/tpg1/acls/ delete ".$initname."\n" ;
         $previqn=$initname ;
       }
-    if ($initaction=="true" && $inittype =="iscsimap" && $initmapiqn != $previqn)  { 
+    if ($initaction=="true" && $inittype =="iscsimap" && $initmapiqn != $previqn && $maptgtname != $prevtgt)  { 
+      echo '<div><div><span class="key"></span>';
       print("Map number:".$initmap." for iqn:".$initmapiqn) ; 
       $ii++ ;
-      $cmd=$cmd."/iscsi/".$tgt."/tpg1/acls/".$initmapiqn."/ delete ".$initmap."\n" ;
+      $cmd=$cmd."/iscsi/".$maptgtname."/tpg1/acls/".$initmapiqn."/ delete ".$initmap."\n" ;
+     }
+     if ($initaction=="true" && $inittype =="iscsitgt" )  { 
+      echo '<div><div><span class="key"></span>';
+      print("Target:".$initname) ; 
+      $ii++ ;
+      $cmd=$cmd."/iscsi/ delete ".$initname."\n" ;
+      $prevtgt=$initname ;
      }
   
     
-    $i=$i+4 ;
+    $i=$i+5 ;
     } while ($i<$c) ;
 
     echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;

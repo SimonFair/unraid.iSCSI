@@ -44,23 +44,30 @@ function processLUNs($action) {
  #   $nodes=build_iscsi_initiators($json) ;
     $new = $_GET["LUNS"] ;
     $newe=$x=explode(";", $new) ;
-    $tgt = $_GET["tgt"] ;
-    $tgt=strip_tags($tgt) ;
-    
     $c = count($newe) -1 ;
     $i = $ii = 0 ;
+    #var_dump($newe) ;
     do {
-       $lunindex=$newe[$i+1] ;
-       $lunaction=$newe[($i+3)] ;
+       $luntype=$newe[$i] ;
+       $tgtname=$lunindex=$newe[$i+1] ;
+       $lunaction=$newe[($i+4)] ;
        $lunname=$newe[($i+2)] ;
-       
-    if ($ii && $lunaction=="true") echo "<br><span class='key'></span>&nbsp;";
-    if ($lunaction=="true")  { print("Lun ".$lunindex."(".$lunname.")")  ; $ii++ ; }
-    
-    
-    if ($lunaction=="true")   $cmd=$cmd."/iscsi/".$tgt."/tpg1/luns/ delete ".$lunindex."\n" ;
+       $luntgt=$newe[($i+3)] ;
 
-    $i=$i+4 ;
+    if ($luntype == "iscsiltgt")   {
+       echo '<div><span class="key">'._('TGT').':</span>'.$tgtname.'</div>' ;
+       #echo '<div><div><span class="key">'._("LUNS").':</span>';
+
+    }
+    #if ($ii && $lunaction=="true") echo "<br><span class='key'></span>&nbsp;";
+    if ($lunaction=="true")  { 
+      echo '<div><div><span class="key"></span>';
+      print("Lun ".$lunindex."(".$lunname.")")  ; $ii++ ; }
+    
+    
+    if ($lunaction=="true")   $cmd=$cmd."/iscsi/".$luntgt."/tpg1/luns/ delete ".$lunindex."\n" ;
+
+    $i=$i+5 ;
     } while ($i<$c) ;
 
     echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
@@ -69,15 +76,6 @@ function processLUNs($action) {
 </head>
 <body>
 <div class="box">
-<?
-$tgt = $_GET["tgt"] ;
-?>
-<div><span class="key"><?=_('TGT')?>:</span>
-<?
-echo $tgt ;
-?>
-</div>
-<div><div><span class="key"><?=_('LUNS')?>:</span>
 <?
 processLUNs("print") ;
 ?>

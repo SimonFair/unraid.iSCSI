@@ -176,7 +176,8 @@ function build_fileio($tj) {
 function build_iscsi_initiators($tj) {
 	global $targetname ;
 	global $luns ;
-
+	
+	
 	$dev=0 ;
 	
 	$sd = $tj["targets"][0] ;

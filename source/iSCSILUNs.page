@@ -1,5 +1,5 @@
-Menu="iSCSITools:3"
-Title="Initiators"
+Menu="iSCSITools"
+Title="LUNS"
 Tag="save"
 ---
 <?PHP
@@ -18,7 +18,7 @@ $translations = file_exists("$docroot/webGui/include/Translations.php");
 require_once "$docroot/plugins/$plugin/include/Legacy.php";
 ?>
 <?if (! $translations):?>
-<?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSIInitiators.page"))?>
+<?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSILUNs.page"))?>
 <?else:?>
 <?
 /* read translations */
@@ -44,23 +44,10 @@ table tr td.thin{line-height:8px;height:8px}
 
 <script>
 $(function(){
-$('#it1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'it1'});
-$('#it2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'it2'});
+$('#lt1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'lt1'});
 });
 
 
-
- function removeInitMap() {
-  var elements = document.getElementById("iscsiinits").elements;
-  var string ="/plugins/unraid.iSCSI/include/removeInitMap.php?more=1&INIT=" ;
-  for (var i = 0, element; element = elements[i++];) {
-    if (element.type === "checkbox" && element.value !=="" )
-    string = string + element.value +';'+ element.checked +";";
-  }
-  openBox(string,"_(Remove Initiators and Maps)_",600,600) ;
-  }
-
-  
 function removeLUN() {
   var elements = document.getElementById("iscsiluns").elements;
   var string ="/plugins/unraid.iSCSI/include/removeLUN.php?more=1&LUNS=" ;
@@ -74,16 +61,9 @@ function removeLUN() {
 </script>
 
 
-
-_(Initiators)_
-
-<pre><form id="iscsiinits" onsubmit="return false"><table id='it1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
-
-
 _(LUNS)_
 
-<pre><form id="iscsiluns" onsubmit="return false"><table id='it2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
-
+<pre><form id="iscsiluns" onsubmit="return false"><table id='lt1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
 <input type="button" value="_(Done)_" onclick="done()">
 <?endif;?>

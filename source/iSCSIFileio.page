@@ -46,12 +46,16 @@ table tr td{padding:0 0 3px 0;margin:0 padding:0px; border-width:0px; }
 table tr td.thin{line-height:8px;height:8px}
 </style>
 
-
+<link type="text/css" rel="stylesheet" href="<?autov("/webGui/styles/jquery.filetree.css")?>">
+<script src="<?=autov("/webGui/javascript/jquery.filetree.js")?>"></script>
 
 <script>
 $(function(){
 $('#ft1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'ft1'});
+$('#ft2').load('/plugins/unraid.iSCSI/include/addFileIO.php',{table:'ft2'});
 });
+
+
 
 function removeFIO() {
   var elements = document.getElementById("iscsifio").elements;
@@ -63,8 +67,24 @@ function removeFIO() {
   openBox(string,"_(Remove File IO)_",600,800) ;
 }
 
- 
-   
+ function addFIO() {
+  var size = document.getElementById("size");
+   var name = document.getElementById("name");
+   var path = document.getElementById("pathfromjs");
+   var writeback =document.getElementById("writeback") ;
+   alert(size)
+     }
+
+  $(function(){
+  $("#destinationShare").fileTreeAttach();
+});
+</script>
+
+<script>
+function path_selected() {
+  var share = $("#destinationShare").val();
+  document.getElementById("pathfromjs").value = share;
+}
 </script>
 
 
@@ -75,6 +95,48 @@ _(File IO Volumes)_
 
 <pre><form id="iscsifio" onsubmit="return false"><table id='ft1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
+<table>
+<div id="title">
+        <span class="left"></span>
+    </div>
+<td><b>Create FileIO Volume:</font></b></td>
+<tr>
+    <td>Path:</td>
+    <td>Name:</td>
+    <td>Size:</td>
+    <td>Write Back:</td>
+</tr>
+<form id="addFileIO"  autocomplete="off">
+<tr style="height:20px;">
+    <td>
+        <input id="pathfromjs" name="pathfromjs" type="hidden"></input>
+        <input type='text' size="15" class='setting' id="destinationShare" placeholder="/mnt/user/Unraid-Kernel-Helper/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
+    </td>
+    <td><input type = "text" style="width: 100px;" name = "name" placeholder="fileIO" required> .img</td>
+    <td> <input type = "text" name = "size" placeholder="20G" required></td>
+    <td>
+        <select name="write_back">
+            <option value="false">false</option>
+            <option value="true">true</option>
+        </select>
+    </td>
+</tr>
+</table>
+
+
+<?php
+if(isset($_POST['createFileIO'])) {
+$size = $_POST["size"];
+$name = $_POST["name"];
+$path = $_POST["pathfromjs"];
+$writeback = $_POST["write_back"];
+shell_exec("/usr/local/emhttp/plugins/unraid.iSCSI/include/exec.sh create_fileIO $name $path $size $writeback");
+echo '<script>parent.window.location.reload();</script>';
+}
+?>
+
+
+<input type="submit" value="_(Add)_" onclick="addFileIO()"><br>
 <input type="button" value="_(Done)_" onclick="done()">
 
 <?endif;?>

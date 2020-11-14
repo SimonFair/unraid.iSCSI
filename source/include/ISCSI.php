@@ -157,7 +157,7 @@ EOT;
  echo '<tr><td><br>' ;
             echo '<input id="removeFileIO" disabled type="submit"  value="'._('Remove Fileio').'" onclick="removeFIO();" '.'>';
       #      echo "</td><td><br>" ; 
-            echo '<input id="addFileio" type="submit"  disabled value="'._('Add new FileIO').'" onclick="addFIO();" '.'>';
+            echo '<input id="addFileio" type="submit" hidden value="'._('Add new FileIO').'" onclick="addFIO();" '.'>';
             echo '<span id="warning"></span>';
             echo '</td><td>';
             echo '</td></tr>';
@@ -179,30 +179,46 @@ case 'it1':
 
    
    $json=get_iscsi_json() ;
-   $nodes=build_iscsi_initiators($json) ;
-   $LIOdevices=build_iscsi_devices($json) ;
+      $LIOdevices=build_iscsi_devices($json) ;
+   $i=$j=$k=1 ;
+  $sd = $tj["targets"] ;
+   foreach($json["targets"] as $sd) {
+     
+   $tgt=$sd["tpgs"][0] ;
+   $luns=(isset($tgt["luns"]) ? $tgt["luns"] : []);
+   $nodes=(isset($tgt["node_acls"]) ? $tgt["node_acls"] : []) ;
+   $portals=$tgt["portals"] ;
+   $parms=$tgt["parameters"] ;
+   $enable=$tgt["enable"] ;
+   $targetname=$sd["wwn"] ;
    
-   echo '<script type="text/javascript"> document.getElementById("targetname").innerHTML =  "<b>'.$targetname.'</b>"</script>';
    echo "</tr><tr>" ;
-  $i=1 ;
+   
+   $iscsitgt="iscsitgt;".$targetname.';;' ;
+   echo '<td><input type="checkbox" class="iscsitgt'.$i++.'"  value="'.$iscsitgt.'" </td>'  ;
+     echo "  ".$targetname."</td>\n" ;
+     echo "</tr><tr>" ; 
+ 
+   
   foreach ($nodes as $init) {
     #if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
-    $iscsiiqn="iscsiiqn;".$init["node_wwn"].';' ;
-    echo '<td><input type="checkbox" class="iscsiiqn'.$i++.'" value="'.$iscsiiqn.'" </td>'  ;
-      echo $init["node_wwn"]." Mapped Luns:".count($init["mapped_luns"])." Attributes ".count($init["attributes"])."\n" ;
+    $iscsiiqn="iscsiiqn;".$init["node_wwn"].';'.$targetname.';' ;
+    echo '<td><input type="checkbox" class="iscsiiqn'.$j++.'" value="'.$iscsiiqn.'" </td>'  ;
+      echo "     ".$init["node_wwn"]." Mapped Luns:".count($init["mapped_luns"])." Attributes ".count($init["attributes"])."\n</tr>" ;
         foreach ($init["mapped_luns"] as $mapluns) 
           {
             
-          $iscsimapl="iscsimap;".$mapluns["index"].';'.$init["node_wwn"] ;
+          $iscsimapl="iscsimap;".$mapluns["index"].';'.$init["node_wwn"] .";".$targetname ;
           echo "<td>" ; 
-          echo '<input type="checkbox" class="iscsimapl'.$mapluns["tpg_lun"].'" value="'.$iscsimapl.'" '  ;
+          echo '<input type="checkbox" class="iscsimapl'.$k++.$mapluns["tpg_lun"].'" value="'.$iscsimapl.'" '  ;
                     
-            echo "</td>      Mapped to lun:".$mapluns["tpg_lun"]." (".$luns[$mapluns["tpg_lun"]]["storage_object"].")\n" ;
+            echo "</td>          Mapped to lun:".$mapluns["tpg_lun"]." (".$luns[$mapluns["tpg_lun"]]["storage_object"].")\n" ;
             echo "</td></tr>";
           }
         }
-          echo '<tr></td><td><br>';
-          echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Initiator(s) or Mapping(s)').'" onclick="removeInitMap();" '.'>';
+      }
+               echo '<tr></td><td><br>';
+          echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Entries').'" onclick="removeInitMap();" '.'>';
              echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
              echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
              echo '<span id="warning"></span>';
@@ -220,91 +236,69 @@ $("#it1 input[type='checkbox']").change(function() {
 EOT;
   
   break;  
-  # Initiator Tab LUNS
+
+  # Initiators ign and mapped LUNS
+  # Tab LUNS
   case 'it2':
-    $json=get_iscsi_json() ;
-    $nodes=build_iscsi_initiators($json) ;
-    sort($luns) ;
-    echo "</tr><tr>" ;
-    foreach ($luns as $lun) {
-      $iscsilun="iscslun;".$lun["index"].';'.$lun["storage_object"] ;
-      echo "<td>" ; 
-      echo '<input type="checkbox" class="iscsilun'.$lun["index"].'" value="'.$iscsilun.'"</input>'  ;
-      
-      echo "   Lun".$lun["index"]."->".str_pad($lun["storage_object"], 50)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
-      echo "</td></tr>";
-    }
+  $json=get_iscsi_json() ;
+  $nodes=build_iscsi_initiators($json) ;
+  
+  $sd = $tj["targets"] ;
+  foreach($json["targets"] as $sd) {
+    
+  $tgt=$sd["tpgs"][0] ;
+  $luns=(isset($tgt["luns"]) ? $tgt["luns"] : []);
+  $nodes=(isset($tgt["node_acls"]) ? $tgt["node_acls"] : []) ;
+  $portals=$tgt["portals"] ;
+  $parms=$tgt["parameters"] ;
+  $enable=$tgt["enable"] ;
+  $targetname=$sd["wwn"] ;
+  sort($luns) ;
+  echo "<tr>" ;
+  $i=1;
+  $iscsitgt="iscsiltgt;".$targetname.';;' ;
+    echo '<td><input type="checkbox" hidden disabled class="iscsiltgt'.$i++.'" value="'.$iscsitgt.'">'  ;
+    echo "    ".$targetname."</td>\n" ;
+    echo "</tr><tr>" ; 
+
   
 
-   echo '</td><td><br>';
-   echo '<input id="removelun" type="submit" disabled value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
-   # echo '</td><td><br>' ;
-      echo '<input id="addLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.' disabled >';
-      echo '<span id="warningLUN"></span>';
-      echo '</td></tr>';
-      echo <<<EOT
-      <script>
-      $("#it2 input[type='checkbox']").change(function() {
-        var matches = document.querySelectorAll("." + this.className);
-        for (var i=0, len=matches.length|0; i<len; i=i+1|0) {
-          matches[i].checked = this.checked ? true : false;
-        }
-        $("#removelun").attr("disabled", false);
-       });
-      </script>
-      EOT;
-    break;
-}
-function make_mount_button($device) {
-	global $paths, $Preclear;
+  echo "</tr><tr>" ;
+  foreach ($luns as $lun) {
+    $iscsilun="iscslun;".$lun["index"].';'.$lun["storage_object"].";".$targetname ;
+    echo "<td>" ; 
+    echo '<input type="checkbox" class="iscsilun'.$lun["index"].$i++.'" value="'.$iscsilun.'"</input>'  ;
+    
+    echo "     Lun".$lun["index"]."->".str_pad($lun["storage_object"], 50)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
+    echo "</td></tr>";
+  }
+  }
 
-	$button = "<span style='width:auto;text-align:right;'><button device='{$device['device']}' class='mount' context='Remove' role='%s' Mount><i class='Mount'></i>%s</button></span>";
+ echo '</td><td><br>';
+ echo '<input id="removelun" type="submit" disabled value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
+ # echo '</td><td><br>' ;
+    echo '<input id="createLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.'  >';
+    echo '<span id="warningLUN"></span>';
+    echo '</td></tr>';
+    echo <<<EOT
+    <script>
+    $("#it2 input[type='checkbox']").change(function() {
+      var matches = document.querySelectorAll("." + this.className);
+      for (var i=0, len=matches.length|0; i<len; i=i+1|0) {
+        matches[i].checked = this.checked ? true : false;
+      }
+      $("#removelun").attr("disabled", false);
+     });
+    </script>
+    EOT;
+  break;
 
-	if (isset($device['partitions'])) {
-		$mounted = isset($device['mounted']) ? $device['mounted'] : in_array(TRUE, array_map(function($ar){return $ar['mounted'];}, $device['partitions']));
-		$disable = count(array_filter($device['partitions'], function($p){ if (! empty($p['fstype']) && $p['fstype'] != "precleared") return TRUE;})) ? "" : "disabled";
-		$format	 = (isset($device['partitions']) && ! count($device['partitions'])) || $device['partitions'][0]['fstype'] == "precleared" ? true : false;
-		$context = "disk";
-	} else {
-		$mounted =	$device['mounted'];
-		$disable = (! empty($device['fstype']) && $device['fstype'] != "crypto_LUKS" && $device['fstype'] != "precleared") ? "" : "disabled";
-		$format	 = ((isset($device['fstype']) && empty($device['fstype'])) || $device['fstype'] == "precleared") ? true : false;
-		$context = "partition";
-	}
-	$is_mounting	= array_values(preg_grep("@/mounting_".basename($device['device'])."@i", listDir(dirname($paths['mounting']))))[0];
-	$is_mounting	= (time() - filemtime($is_mounting) < 300) ? TRUE : FALSE;
-	$is_unmounting	= array_values(preg_grep("@/unmounting_".basename($device['device'])."@i", listDir(dirname($paths['mounting']))))[0];
-	$is_unmounting	= (time() - filemtime($is_unmounting) < 300) ? TRUE : FALSE;
-	$is_formatting	= array_values(preg_grep("@/formatting_".basename($device['device'])."@i", listDir(dirname($paths['mounting']))))[0];
-	$is_formatting	= (time() - filemtime($is_formatting) < 300) ? TRUE : FALSE;
+case 'test':
 
-	$dev			= basename($device['device']);
-	$preclearing	= $Preclear ? $Preclear->isRunning(basename($device['device'])) : false;
-	if ($device['size'] == 0) {
-		$button = sprintf($button, $context, 'mount', 'disabled', 'fa fa-erase', _('Mount'));
-	} elseif ($format) {
-		$disable = (file_exists("/usr/sbin/parted") && get_config("Config", "destructive_mode") == "enabled") ? "" : "disabled";
-		$disable = $preclearing ? "disabled" : $disable;
-		$button = sprintf($button, $context, 'format', $disable, 'fa fa-erase', _('Format'));
-	} elseif ($is_mounting) {
-		$button = sprintf($button, $context, 'umount', 'disabled', 'fa fa-circle-o-notch fa-spin', ' '._('Mounting...'));
-	} elseif ($is_unmounting) {
-		$button = sprintf($button, $context, 'mount', 'disabled', 'fa fa-circle-o-notch fa-spin', ' '._('Unmounting...'));
-	} elseif ($is_formatting) {
-		$button = sprintf($button, $context, 'format', 'disabled', 'fa fa-circle-o-notch fa-spin', ' '._('Formatting...'));
-	} elseif ($mounted) {
-		$cmd = $device['command'];
-		$script_running = is_script_running($cmd);
-		if ($script_running) {
-			$button = sprintf($button, $context, 'umount', 'disabled', 'fa fa-circle-o-notch fa-spin', ' '._('Running...'));
-		} else {
-			$disable = ! isset($device['partitions'][0]['mountpoint']) || is_mounted($device['partitions'][0]['mountpoint'], TRUE) ? $disable : "disabled";
-			$disable = ! isset($device['mountpoint']) || is_mounted($device['mountpoint'], TRUE) ? $disable : "disabled";
-			$button = sprintf($button, $context, 'umount', $disable, 'fa fa-export', _('Unmount'));
-		}
-	} else {
-		$disable = ($device['partitions'][0]['pass_through'] || $preclearing ) ? "disabled" : $disable;
-		$button = sprintf($button, $context, 'mount', $disable, 'fa fa-import', _('Mount'));
-	}
-	return $button;
+   
+  break ; 
+ 
+
+  
+
 }

@@ -1,0 +1,176 @@
+Menu="iSCSITools:5"
+Title="Vols"
+Tag="file"
+---
+<link type="text/css" rel="stylesheet" href="<?autov("/webGui/styles/jquery.filetree.css")?>">
+<script src="<?=autov("/webGui/javascript/jquery.filetree.js")?>"></script>
+
+<script>
+$(function(){
+  $("#destinationShare").fileTreeAttach();
+});
+</script>
+
+<script>
+function path_selected() {
+  var share = $("#destinationShare").val();
+  document.getElementById("pathfromjs").value = share;
+}
+</script>
+
+<h1 style="text-align: center;"><span style="color: red;">WARNING!</span></a></h1>
+<p style="text-align: center;"><b>Please be carefull which disk you choose and double check it again since it can happen that a wrong disk is displayed in the dropdown.<br>Disks that are mounted/assigned through the Unassigned-Devices-Plguin are included in the dropdown list! Please double check and be carefull, if you choose a wrong disk this could lead to data loss!</b></p>
+
+<table>
+<div id="title">
+        <span class="left"></span>
+    </div>
+<td><b><font size="+1">Create FileIO Volume:</font></b></td>
+<tr>
+    <td>Path:</td>
+    <td>Name:</td>
+    <td>Size:</td>
+    <td>Write Back:</td>
+</tr>
+<form id="s" method="post" autocomplete="off">
+<tr style="height:20px;">
+    <td>
+        <input id="pathfromjs" name="pathfromjs" type="hidden"></input>
+        <input type='text' size="15" class='setting' id="destinationShare" placeholder="/mnt/user/Unraid-Kernel-Helper/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
+    </td>
+    <td><input type = "text" style="width: 100px;" name = "name" placeholder="fileIO" required> .img</td>
+    <td> <input type = "text" name = "size" placeholder="20G" required></td>
+    <td>
+        <select name="write_back">
+            <option value="false">false</option>
+            <option value="true">true</option>
+        </select>
+    </td>
+</tr>
+</table>
+<option id="s" method ="post">
+    <input type="submit" name="createFileIO" value="Create FileIO">
+    </option>
+</form>
+
+<?php
+if(isset($_POST['createFileIO'])) {
+$size = $_POST["size"];
+$name = $_POST["name"];
+$path = $_POST["pathfromjs"];
+$writeback = $_POST["write_back"];
+shell_exec("/usr/local/emhttp/plugins/Unraid-Kernel-Helper/include/exec.sh create_fileIO $name $path $size $writeback");
+echo '<script>parent.window.location.reload();</script>';
+}
+?>
+
+
+<?
+if (isset($_SESSION['availfilios'] ) === true && trim($_SESSION['availfilios'] ) !== ''):
+?>
+<b>Available FileIO Volumes:</b><br>
+<?php
+echo str_replace("\n", '<br>', $_SESSION['availfilios']);
+?>
+<br>
+<form id="s" method="post" >
+  <select name="deletefileio" required>
+    <option selected="selected" value="">Choose FileIO</option>
+      <?php
+      $output = $_SESSION['availfilios'];
+      $data = explode("\n", $output);
+      var_dump($data);
+      foreach($data as $item){
+      echo "<option value=\"$item\"> $item</option>";
+    }
+    ?>
+</select>
+<input type="submit" name="deleteFileIO" value="Delete">
+</form>
+<p><b><i>If you delete a FileIO Backstore it won't remove the image from your hard disk!</i></b></p>
+
+<?php
+if(isset($_POST['deleteFileIO'])) {
+$deletefileio = $_POST["deletefileio"];
+shell_exec("/usr/local/emhttp/plugins/Unraid-Kernel-Helper/include/exec.sh delete_fileIO $deletefileio");
+echo '<script>parent.window.location.reload();</script>';
+}
+?>
+
+<? endif; ?>
+
+<table>
+<div id="title">
+        <span class="left"></span>
+    </div>
+<td><b><font size="+1">Create Block Volume:</font></b></td>
+<tr>
+    <td>Disk:</td>
+    <td>Name:</td>
+</tr>
+<form id="a" method="post">
+<tr style="height:20px;">
+    <td>
+  <select name="disk" required>
+    <option selected="selected" value="">Choose disk</option>
+      <?php
+      $output = $_SESSION['availdisks'];
+      $data = explode("\n", $output);
+      var_dump($data);
+      foreach($data as $item){
+      echo "<option value=\"$item\"> $item</option>";
+    }
+    ?>
+    </td>
+    <td><input type = "text" style="width: 100px;" name = "name" placeholder="1TB_Disk" required></td>
+</tr>
+</table>
+<option id="a" method ="post">
+    <input type="submit" name="createBlock" value="Create Block">
+</option>
+</form>
+
+<?php
+if(isset($_POST['createBlock'])) {
+$disk = $_POST["disk"];
+$name = $_POST["name"];
+shell_exec("/usr/local/emhttp/plugins/Unraid-Kernel-Helper/include/exec.sh create_blockvol $disk $name");
+echo '<script>parent.window.location.reload();</script>';
+}
+?>
+
+
+<?
+if (isset($_SESSION['availblockvols'] ) === true && trim($_SESSION['availblockvols'] ) !== ''):
+?>
+<b>Available Block Volumes:</b><br>
+<?php
+echo str_replace("\n", '<br>', $_SESSION['availblockvols']);
+?>
+<br>
+<form id="s" method="post" >
+  <select name="deleteblockvol" required>
+    <option selected="selected" value="">Choose Block Volume</option>
+      <?php
+      $output = $_SESSION['availblockvols'];
+      $data = explode("\n", $output);
+      var_dump($data);
+      foreach($data as $item){
+      echo "<option value=\"$item\"> $item</option>";
+    }
+    ?>
+</select>
+<input type="submit" name="deleteBlockVOL" value="Delete">
+</form>
+<p><b><i>If you delete a Block Volume Backstore it won't remove the image from your hard disk!</i></b></p>
+
+<?php
+if(isset($_POST['deleteBlockVOL'])) {
+$deleteblockvol = $_POST["deleteblockvol"];
+shell_exec("/usr/local/emhttp/plugins/Unraid-Kernel-Helper/include/exec.sh delete_blockVOL $deleteblockvol");
+echo '<script>parent.window.location.reload();</script>';
+}
+?>
+
+<? endif; ?>
+
