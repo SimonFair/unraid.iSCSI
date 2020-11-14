@@ -99,7 +99,7 @@ case 'dt1':
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="name"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="rreadonly" && $line2!="name"){
                  echo "<td>".$d2."</td>";
               }          
             }
@@ -178,8 +178,8 @@ EOT;
 case 'it1':
 
    
-   $json=get_iscsi_json() ;
-      $LIOdevices=build_iscsi_devices($json) ;
+ $json=get_iscsi_json() ;
+  $LIOdevices=build_iscsi_devices($json) ;
    $i=$j=$k=1 ;
   $sd = $tj["targets"] ;
    foreach($json["targets"] as $sd) {
@@ -192,7 +192,7 @@ case 'it1':
    $enable=$tgt["enable"] ;
    $targetname=$sd["wwn"] ;
    
-   echo "</tr><tr>" ;
+   echo "<tr>" ;
    
    $iscsitgt="iscsitgt;".$targetname.';;' ;
    echo '<td><input type="checkbox" class="iscsitgt'.$i++.'"  value="'.$iscsitgt.'" </td>'  ;
@@ -217,8 +217,8 @@ case 'it1':
           }
         }
       }
-               echo '<tr></td><td><br>';
-          echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Entries').'" onclick="removeInitMap();" '.'>';
+             echo '<tr></td><td><br>';
+             echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Entries').'" onclick="removeInitMap();" '.'>';
              echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
              echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
              echo '<span id="warning"></span>';
@@ -242,7 +242,7 @@ EOT;
   case 'it2':
   $json=get_iscsi_json() ;
   $nodes=build_iscsi_initiators($json) ;
-  
+  echo "</tr><tr>" ;
   $sd = $tj["targets"] ;
   foreach($json["targets"] as $sd) {
     
@@ -254,7 +254,7 @@ EOT;
   $enable=$tgt["enable"] ;
   $targetname=$sd["wwn"] ;
   sort($luns) ;
-  echo "<tr>" ;
+  echo "</tr><tr>" ;
   $i=1;
   $iscsitgt="iscsiltgt;".$targetname.';;' ;
     echo '<td><input type="checkbox" hidden disabled class="iscsiltgt'.$i++.'" value="'.$iscsitgt.'">'  ;
@@ -276,7 +276,6 @@ EOT;
 
  echo '</td><td><br>';
  echo '<input id="removelun" type="submit" disabled value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
- # echo '</td><td><br>' ;
     echo '<input id="createLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.'  >';
     echo '<span id="warningLUN"></span>';
     echo '</td></tr>';
@@ -290,15 +289,7 @@ EOT;
       $("#removelun").attr("disabled", false);
      });
     </script>
-    EOT;
+EOT;
   break;
-
-case 'test':
-
-   
-  break ; 
- 
-
-  
 
 }

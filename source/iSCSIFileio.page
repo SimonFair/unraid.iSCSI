@@ -42,12 +42,12 @@ if (!$fl) {
 
 <script>
 $(function(){
-  $("#tstdestinationShare").fileTreeAttach();
+  $("#fiodestinationShare").fileTreeAttach();
 });
 
 function path_selected() {
-  var share = $("#tstdestinationShare").val();
-  document.getElementById("tstpathfromjs").value = share;
+  var share = $("#fiotdestinationShare").val();
+  document.getElementById("fiopathfromjs").value = share;
 }
 </script>
 
@@ -98,14 +98,6 @@ function removeFIO() {
   openBox(string,"_(Remove File IO)_",600,800) ;
 }
 
- function addFIO() {
-  var size = document.getElementById("size");
-   var name = document.getElementById("name");
-   var path = document.getElementById("pathfromjs");
-   var writeback =document.getElementById("writeback") ;
-   alert(size)
-     }
-
   $(function(){
   $("#destinationShare").fileTreeAttach();
 });
@@ -113,8 +105,8 @@ function removeFIO() {
 
 <script>
 function path_selected() {
-  var share = $("#destinationShare").val();
-  document.getElementById("pathfromjs").value = share;
+  var share = $("#fiodestinationShare").val();
+  document.getElementById("fiopathfromjs").value = share;
 }
 </script>
 
@@ -131,7 +123,7 @@ _(File IO Volumes)_
 <div id="title">
         <span class="left"></span>
     </div>
-<td><b><font size="+1">Create FileIO Volume:</font></b></td>
+<td><b>Create FileIO Volume:</b></td>
 <tr>
     <td>Path:</td>
     <td>Name:</td>
@@ -141,8 +133,8 @@ _(File IO Volumes)_
 
 <tr style="height:20px;">
     <td>
-        <input id="tstpathfromjs" name="tstpathfromjs" type="hidden"></input>
-        <input type='text' size="15" class='setting' id="tstdestinationShare" placeholder="/mnt/user/Unraid-Kernel-Helper/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
+        <input id="pathfromjs" name="fiopathfromjs" type="hidden"></input>
+        <input type='text' size="15" class='setting' id="fiodestinationShare" placeholder="/mnt/user/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
     </td>
     <td><input type = "text" style="width: 100px;" name = "name" placeholder="fileIO" required> .img</td>
     <td> <input type = "text" name = "size" placeholder="20G" required></td>
