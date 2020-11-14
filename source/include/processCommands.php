@@ -9,19 +9,10 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  */
-function processTargetcli($cmdstr) {
-	# Write command string a process
-	# targetctl  /tmp/string > /var/run/targetcli.last
-	#exec($cmdstr  ,$tj) ;
-    echo "Command Processing......" ;
-    $cmd=$cmdstr."\nexit\n"  ;
-    exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
-	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
-    
-    exec($cmd, $output, $return) ;
-    $v=var_dump($output) ;
-    exec("echo \"$v\" >/tmp/cmd.last");
-}
+
+$plugin = "unraid.iSCSI";
+$docroot = $docroot ?? $_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
+require_once "$docroot/plugins/$plugin/include/lib.php";
 $cmd = $_GET["cmd"] ;
 processTargetcli($cmd) ;
 return(0) ;

@@ -28,7 +28,7 @@ function create_fileIO(){
 if [ ! -d $2 ]; then
 	mkdir -p $2
 fi
-echo -n "$(targetcli backstores/fileio create $1 $2/$1.img $3 write_back=$4)"
+echo -n "$(targetcli backstores/fileio create $1 $2/$1.img $3 write_back=$4) >/tmp/file"
 }
 
 function avail_blockvols(){

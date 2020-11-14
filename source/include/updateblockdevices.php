@@ -43,14 +43,6 @@ div.closed{display:none}
 <div></div>
 <div><span class="key"><?=_('SCSI Devices')?>:</span>
 <?
-function processTargetcli($cmdstr) {
-    echo "Command Processing......" ;
-    $cmd=$cmdstr."\nexit\n"  ;
-    exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
-	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
-    exec("echo \"$cmd\" >/tmp/cmd.last", $output, $myreturn );
-    exec($cmd, $output, $return) ;
-}
 
     $new = $_GET["DEV"] ;
     $delete =$_GET["Remove"] ;

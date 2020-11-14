@@ -217,3 +217,13 @@ function alert($msg) {
     echo "<script type='text/javascript'>alert('$msg');</script>";
 }
 
+function processTargetcli($cmdstr) {
+	# Write command string a process
+	# targetctl  /tmp/string > /var/run/targetcli.last
+	#exec($cmdstr  ,$tj) ;
+    $cmd=$cmdstr."\nexit\n"  ;
+    exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
+	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
+    exec($cmd, $output, $return) ;
+   
+}

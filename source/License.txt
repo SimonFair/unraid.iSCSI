@@ -1,4 +1,4 @@
-### Unassigned Devices plugin for unRAID
+### iSCSI GUI plugin for unRAID
 
 Copyright (C) 2020 Simon Fairweather
 

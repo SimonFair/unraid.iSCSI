@@ -37,6 +37,37 @@ if (!$fl) {
 
 
 
+<link type="text/css" rel="stylesheet" href="<?autov("/webGui/styles/jquery.filetree.css")?>">
+<script src="<?autov("/webGui/javascript/jquery.filetree.js")?>"></script>
+
+<script>
+$(function(){
+  $("#tstdestinationShare").fileTreeAttach();
+});
+
+function path_selected() {
+  var share = $("#tstdestinationShare").val();
+  document.getElementById("tstpathfromjs").value = share;
+}
+</script>
+
+
+<?php
+require_once "$docroot/plugins/$plugin/include/lib.php";
+
+if (count($_POST)) {
+	if ($_POST['#apply'] == "_(Add FileIO)_") {
+      $size = $_POST["size"];
+      $name = $_POST["name"];
+      $path = $_POST["tstpathfromjs"];
+      $writeback = $_POST["write_back"];
+      $cmdstr="/backstores/fileio create ".$name." ".$path.$name.".img ".$size." write_back=".$writeback ;
+      processTargetcli($cmdstr) ;
+    
+    }
+}
+?>
+
 <style>
 table.pre{margin-top:0;background:transparent}
 table.pre td:first-child{width:50px ;}
@@ -95,22 +126,23 @@ _(File IO Volumes)_
 
 <pre><form id="iscsifio" onsubmit="return false"><table id='ft1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
+<form name="addfileIO" method="POST" autocomplete="off">
 <table>
 <div id="title">
         <span class="left"></span>
     </div>
-<td><b>Create FileIO Volume:</font></b></td>
+<td><b><font size="+1">Create FileIO Volume:</font></b></td>
 <tr>
     <td>Path:</td>
     <td>Name:</td>
     <td>Size:</td>
     <td>Write Back:</td>
 </tr>
-<form id="addFileIO"  autocomplete="off">
+
 <tr style="height:20px;">
     <td>
-        <input id="pathfromjs" name="pathfromjs" type="hidden"></input>
-        <input type='text' size="15" class='setting' id="destinationShare" placeholder="/mnt/user/Unraid-Kernel-Helper/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
+        <input id="tstpathfromjs" name="tstpathfromjs" type="hidden"></input>
+        <input type='text' size="15" class='setting' id="tstdestinationShare" placeholder="/mnt/user/Unraid-Kernel-Helper/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
     </td>
     <td><input type = "text" style="width: 100px;" name = "name" placeholder="fileIO" required> .img</td>
     <td> <input type = "text" name = "size" placeholder="20G" required></td>
@@ -122,21 +154,10 @@ _(File IO Volumes)_
     </td>
 </tr>
 </table>
+<input type="submit" name="#apply" value='_(Add FileIO)_'>
+</form>
 
 
-<?php
-if(isset($_POST['createFileIO'])) {
-$size = $_POST["size"];
-$name = $_POST["name"];
-$path = $_POST["pathfromjs"];
-$writeback = $_POST["write_back"];
-shell_exec("/usr/local/emhttp/plugins/unraid.iSCSI/include/exec.sh create_fileIO $name $path $size $writeback");
-echo '<script>parent.window.location.reload();</script>';
-}
-?>
-
-
-<input type="submit" value="_(Add)_" onclick="addFileIO()"><br>
 <input type="button" value="_(Done)_" onclick="done()">
 
 <?endif;?>
