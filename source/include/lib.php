@@ -66,7 +66,8 @@ function get_unassigned_disks() {
 				if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
 				if ($defined) {
 					$k=array_search($d , array_column($LIOdevices, 'dev')) ;
-					$ro=$LIOdevices[$k]["readonly"] ;
+					if ($k === 0) $ro=$LIOdevices[$k]["readonly"] ;
+					else $ro = 0 ;
 				}
 				  
 
@@ -152,9 +153,7 @@ function build_iscsi_devices($tj) {
 		unset($sr["attributes"]) ;
 		$sd[$key] = $sr;	
 	}
-	
 		
-	
 	return $sd ;
 }    
 
@@ -173,9 +172,20 @@ function build_fileio($tj) {
 	return $sd ;
 }    
 
+function build_lunindex($tluns) {
+	 
+    
+	foreach ($tluns as $lun) {
+	  $indexlun[$lun["index"]] = $lun ;
+	}
+	
+	return $indexlun ;
+}    
+
+
 function build_iscsi_initiators($tj) {
 	global $targetname ;
-	global $luns ;
+	# global $luns ;
 	
 	
 	$dev=0 ;

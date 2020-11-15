@@ -1,5 +1,5 @@
-Menu="iSCSITools:1"
-Title="Status"
+Menu="iSCSITools:99"
+Title="Diags"
 Tag="iscsi"
 
 ---
@@ -21,7 +21,7 @@ require_once "$docroot/plugins/$plugin/include/Legacy.php";
 require_once "$docroot/plugins/$plugin/include/lib.php";
 ?>
 <?if (! $translations):?>
-<?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSIStatus.page"))?>
+<?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSIDiags.page"))?>
 <?else:?>
 <?
 /* read translations */
@@ -55,19 +55,24 @@ table tr td.thin{line-height:8px;height:8px}
 
 <script>
 $(function(){
-$('#st1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'t1'});  
 $('#st2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st2'}); 
-$('#st3').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'t3'});  
+$('#st4').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st4'});  
+});
+
+$(function() {
+  caPluginUpdateCheck("iSCSI.plg",{name:"iSCSI GUI"});
 });
 </script>
 
-**_(Active Sessions)_**
 
-<pre><form id="iscsistat" onsubmit="return false"><table id='st1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
-**_(Configuration)_**
+**_(Last Targetcli output)_**
 
-<pre><table id='st3' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
+<pre><table id='st2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
+
+**_(Last Commands Processed)_**
+
+<pre><table id='st4' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
 
 <input type="button" value="_(Done)_" onclick="done()">
 

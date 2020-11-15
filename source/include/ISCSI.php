@@ -63,11 +63,18 @@ case 'st2':
         echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
        }   
       break;
-
+      case 'st4':
+        exec('cat /tmp/iscsicmd.run'  ,$TC);
+            foreach ($TC as $line) {
+          echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
+         }   
+        break;
 case 'dt1':
         $groups=get_unassigned_disks() ;
-         
-        echo "</tr><tr><td>Status      Readonly\n    Selection</td><td>Device</td>" ;
+
+               
+       echo "</tr><tr><td>Status      Readonly\n    Selection</td><td>Device</td>" ;
+        
          foreach ($groups[array_key_first($groups)] as $line2=>$d2) {
           if ($line2!="defined" && $line2!="partitions" && $line2!="unraid" && $line2!="definedx" && $line2!="by-id" && $line2!="bpartitions" && $line2!="readonly" && $line2!="name") {
             echo '<td>'.ucwords($line2)."</td>";
@@ -99,7 +106,7 @@ case 'dt1':
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="rreadonly" && $line2!="name"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="name"){
                  echo "<td>".$d2."</td>";
               }          
             }
@@ -179,26 +186,27 @@ case 'it1':
 
    
  $json=get_iscsi_json() ;
-  $LIOdevices=build_iscsi_devices($json) ;
+
    $i=$j=$k=1 ;
-  $sd = $tj["targets"] ;
+   $sd = $tj["targets"] ;
    foreach($json["targets"] as $sd) {
      
    $tgt=$sd["tpgs"][0] ;
-   $luns=(isset($tgt["luns"]) ? $tgt["luns"] : []);
+   $tluns=(isset($tgt["luns"]) ? $tgt["luns"] : []);
    $nodes=(isset($tgt["node_acls"]) ? $tgt["node_acls"] : []) ;
    $portals=$tgt["portals"] ;
    $parms=$tgt["parameters"] ;
    $enable=$tgt["enable"] ;
    $targetname=$sd["wwn"] ;
-   
+   #create LUN array based on index & name.  
+   $tgtluns=build_lunindex($tluns) ;
    echo "<tr>" ;
-   
    $iscsitgt="iscsitgt;".$targetname.';;' ;
    echo '<td><input type="checkbox" class="iscsitgt'.$i++.'"  value="'.$iscsitgt.'" </td>'  ;
      echo "  ".$targetname."</td>\n" ;
      echo "</tr><tr>" ; 
- 
+
+   
    
   foreach ($nodes as $init) {
     #if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
@@ -211,8 +219,8 @@ case 'it1':
           $iscsimapl="iscsimap;".$mapluns["index"].';'.$init["node_wwn"] .";".$targetname ;
           echo "<td>" ; 
           echo '<input type="checkbox" class="iscsimapl'.$k++.$mapluns["tpg_lun"].'" value="'.$iscsimapl.'" '  ;
-                    
-            echo "</td>          Mapped to lun:".$mapluns["tpg_lun"]." (".$luns[$mapluns["tpg_lun"]]["storage_object"].")\n" ;
+         $index=$mapluns["tpg_lun"];
+            echo "</td>          Mapped Lun ".$mapluns["index"]." to Target lun:".$mapluns["tpg_lun"]." (".$tgtluns[$index]["storage_object"].")\n" ;
             echo "</td></tr>";
           }
         }
@@ -253,23 +261,24 @@ EOT;
   $parms=$tgt["parameters"] ;
   $enable=$tgt["enable"] ;
   $targetname=$sd["wwn"] ;
-  sort($luns) ;
+  $sluns=build_lunindex($luns) ;
+  natsort($sluns) ;
   echo "</tr><tr>" ;
   $i=1;
   $iscsitgt="iscsiltgt;".$targetname.';;' ;
     echo '<td><input type="checkbox" hidden disabled class="iscsiltgt'.$i++.'" value="'.$iscsitgt.'">'  ;
     echo "    ".$targetname."</td>\n" ;
     echo "</tr><tr>" ; 
-
+  
   
 
   echo "</tr><tr>" ;
-  foreach ($luns as $lun) {
+  foreach ($sluns as $lun) {
     $iscsilun="iscslun;".$lun["index"].';'.$lun["storage_object"].";".$targetname ;
     echo "<td>" ; 
     echo '<input type="checkbox" class="iscsilun'.$lun["index"].$i++.'" value="'.$iscsilun.'"</input>'  ;
     
-    echo "     Lun".$lun["index"]."->".str_pad($lun["storage_object"], 50)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
+    echo "     Lun".$lun["index"]."->".str_pad($lun["storage_object"], 85)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
     echo "</td></tr>";
   }
   }
