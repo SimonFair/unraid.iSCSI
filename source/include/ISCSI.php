@@ -225,9 +225,7 @@ case 'it1':
           }
         }
       }
-             echo '<tr></td><td><br>';
-
-         
+             echo '<tr></td><td><br>';       
              echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Entries').'" onclick="removeInitMap();" '.'>';
              echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
              echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
@@ -253,7 +251,6 @@ EOT;
   $json=get_iscsi_json() ;
   $nodes=build_iscsi_initiators($json) ;
   echo "</tr><tr>" ;
-  $sd = $tj["targets"] ;
   $j=1;
   foreach($json["targets"] as $sd) {
     
@@ -288,7 +285,7 @@ EOT;
 
  echo '</td><td><br>';
  echo '<input id="removelun" type="submit" disabled value="'._('Remove Selected LUN(s)').'" onclick="removeLUN();" '.'>';
-    echo '<input id="createLUN" type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.'  >';
+    echo '<input id="createLUN" hidden type="submit" value="'._('Add new LUN').'" onclick="addLUN();" '.'  >';
     echo '<span id="warningLUN"></span>';
     echo '</td></tr>';
     echo <<<EOT
