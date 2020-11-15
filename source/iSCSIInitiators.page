@@ -16,6 +16,7 @@ $plugin = "unraid.iSCSI";
 $docroot = $docroot ?? $_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
 $translations = file_exists("$docroot/webGui/include/Translations.php");
 require_once "$docroot/plugins/$plugin/include/Legacy.php";
+require_once "$docroot/plugins/$plugin/include/lib.php";
 ?>
 <?if (! $translations):?>
 <?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSIInitiators.page"))?>
@@ -32,6 +33,8 @@ if (!$fl) {
   echo "<p class='notice shift'>"._('Targetcli in use unable to read status and config.').".</p>";
   return;
 } 
+$_SESSION['availstorage'] = availstorage();
+print_r($_SESSION['availstorage']) ;
 ?>
 
 <style>
@@ -83,6 +86,42 @@ _(Initiators)_
 _(LUNS)_
 
 <pre><form id="iscsiluns" onsubmit="return false"><table id='it2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
+
+
+
+<div id="title">
+        <span class="left"></span>
+    </div>
+
+<td><b>Create Block LUN:</b></td>
+
+<form id="newLUN" method="post" >
+ 
+
+<select name="LUNname" required>
+    <option selected="selected" value="" >Choose Storage</option>
+      <?php
+      $output = $_SESSION['availstorage'];
+
+      foreach($output as $item){
+
+      echo "<option value=\"$item\"> $item</option>";
+
+}
+?>
+</select>
+</option>
+<input type="submit" name="LUNblock" value="Add LUN">
+</form>
+
+
+<?php
+if(isset($_POST['addLUNk'])) {
+$availIQN = $_POST["availIQN"];
+$blockNAME = $_POST["blockNAME"];
+echo '<script>parent.window.location.reload();</script>';
+}
+?>
 
 
 <input type="button" value="_(Done)_" onclick="done()">

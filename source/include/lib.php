@@ -237,3 +237,6 @@ function processTargetcli($cmdstr) {
     exec($cmd, $output, $return) ;
    
 }
+function availstorage() {
+    return(array("Test", "Test2")) ;
+}

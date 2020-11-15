@@ -106,7 +106,7 @@ case 'dt1':
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="name"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="rreadonly" && $line2!="name"){
                  echo "<td>".$d2."</td>";
               }          
             }
@@ -220,7 +220,7 @@ case 'it1':
           echo "<td>" ; 
           echo '<input type="checkbox" class="iscsimapl'.$k++.$mapluns["tpg_lun"].'" value="'.$iscsimapl.'" '  ;
          $index=$mapluns["tpg_lun"];
-            echo "</td>          Mapped Lun ".$mapluns["index"]." to Target lun:".$mapluns["tpg_lun"]." (".$tgtluns[$index]["storage_object"].")\n" ;
+            echo "</td>          Mapped Lun:".$mapluns["index"]." to Target lun:".$mapluns["tpg_lun"]." (".$tgtluns[$index]["storage_object"].")\n" ;
             echo "</td></tr>";
           }
         }
@@ -300,5 +300,10 @@ EOT;
     </script>
 EOT;
   break;
+
+  case 'avstg':
+   # $json=get_iscsi_json() ;
+     echo "Test" ;
+    break;
 
 }
