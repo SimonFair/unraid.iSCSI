@@ -65,15 +65,13 @@ function applyCfgDev() {
   }
 if (optdel === 1)
   {
-  string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove='No'&DEV=" + string ; 
+  string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=Yes&DEV=" + string ; 
   openBox(string,"_(Remove Block Devices)_",600,800) ;
   }
   else {
-      $.get( "/plugins/unraid.iSCSI/include/updateblockdevices.php", { Remove: "No", DEV: string } ) 
-      .done(function(d) {
-              parent.window.location.reload();
-  });
-      
+    string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=No&DEV=" + string ; 
+    openBox(string,"_(Add Block Devices)_",600,800) ;
+    
    }
 
 }

@@ -44,6 +44,7 @@ div.closed{display:none}
 <div><span class="key"><?=_('SCSI Devices')?>:</span>
 <?
 
+
     $new = $_GET["DEV"] ;
     $delete =$_GET["Remove"] ;
     $newe=$x=explode(";", $new) ;
@@ -82,12 +83,19 @@ div.closed{display:none}
     echo '<input type="hidden" id="cmds" name="commands" value="'.$cmd.'"' ;
     echo "<br><span class='key'></span>&nbsp;";
     if ($delete=="No") { 
+        echo "Processing commands" ;
         processTargetcli($cmd) ;
+        echo '<script type="text/javascript">',
+     'parent.window.location.reload();',
+     '</script>' 
+     ;
+     return ;
     }
     
 ?>
 </div>
 <div style="margin-top:24px;margin-bottom:12px"><span class="key"></span>
+
 <input type="button" value="<?=_('Cancel')?>" onclick="top.Shadowbox.close()">
 <input type="button" value="<?=_('Confirm')?>" onclick="updateDevs()">
 </div></div>

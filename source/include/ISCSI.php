@@ -226,6 +226,8 @@ case 'it1':
         }
       }
              echo '<tr></td><td><br>';
+
+         
              echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Entries').'" onclick="removeInitMap();" '.'>';
              echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
              echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
@@ -252,6 +254,7 @@ EOT;
   $nodes=build_iscsi_initiators($json) ;
   echo "</tr><tr>" ;
   $sd = $tj["targets"] ;
+  $j=1;
   foreach($json["targets"] as $sd) {
     
   $tgt=$sd["tpgs"][0] ;
@@ -266,7 +269,7 @@ EOT;
   echo "</tr><tr>" ;
   $i=1;
   $iscsitgt="iscsiltgt;".$targetname.';;' ;
-    echo '<td><input type="checkbox" hidden disabled class="iscsiltgt'.$i++.'" value="'.$iscsitgt.'">'  ;
+    echo '<td><input type="checkbox"  class="iscsiltgt'.$j++.'" value="'.$iscsitgt.'">'  ;
     echo "    ".$targetname."</td>\n" ;
     echo "</tr><tr>" ; 
   
@@ -278,7 +281,7 @@ EOT;
     echo "<td>" ; 
     echo '<input type="checkbox" class="iscsilun'.$lun["index"].$i++.'" value="'.$iscsilun.'"</input>'  ;
     
-    echo "     Lun".$lun["index"]."->".str_pad($lun["storage_object"], 85)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
+    echo "          Lun".$lun["index"]."->".str_pad($lun["storage_object"], 85)."alua ".$lun["alua_tg_pt_gp_name"]."\n" ;
     echo "</td></tr>";
   }
   }
@@ -301,9 +304,5 @@ EOT;
 EOT;
   break;
 
-  case 'avstg':
-   # $json=get_iscsi_json() ;
-     echo "Test" ;
-    break;
-
+ 
 }

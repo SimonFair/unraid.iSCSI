@@ -34,7 +34,24 @@ if (!$fl) {
   return;
 } 
 $_SESSION['availstorage'] = availstorage();
-print_r($_SESSION['availstorage']) ;
+$_SESSION['availtgt'] = availtgt();
+
+
+# /iscsi/iqn.2003-01.org.linux-iscsi.tower.x8664:sn.ee5cd767532c/tpg1/luns  create /backstores/ramdisk/testramdisk add_mapped_luns=false 
+if (count($_POST)) {
+	if ($_POST['#applyLUN'] == "_(Add LUN)_") {
+      $typename=$_POST["LUNname"];
+      $tgtname=$_POST["TGTname"];
+      $var=explode(";", $typename) ;
+      if ($var[0]=="block") $name="/backstores/block/".$var[1] ;
+         if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
+            if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
+               if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
+      $cmdstr="/iscsi/".$tgtname."/tpg1/luns create ".$name." add_mapped_luns=false" ;
+      processTargetcli($cmdstr) ;
+    
+    }
+}
 ?>
 
 <style>
@@ -93,10 +110,23 @@ _(LUNS)_
         <span class="left"></span>
     </div>
 
-<td><b>Create Block LUN:</b></td>
+<td><b>Create LUN:</b></td>
+
+Select LUN target(s) above for lun to be added to.
 
 <form id="newLUN" method="post" >
- 
+
+  <select name="TGTname" required>
+    <option selected="selected" value="">Choose IQN</option>
+      <?php
+      $output = $_SESSION['availtgt'];
+      
+      foreach($output as $item){
+
+      echo "<option value=\"$item\"> $item</option>";
+}
+?>
+</select> 
 
 <select name="LUNname" required>
     <option selected="selected" value="" >Choose Storage</option>
@@ -111,17 +141,8 @@ _(LUNS)_
 ?>
 </select>
 </option>
-<input type="submit" name="LUNblock" value="Add LUN">
+<input type="submit" name="#applyLUN" value='_(Add LUN)_'>
 </form>
-
-
-<?php
-if(isset($_POST['addLUNk'])) {
-$availIQN = $_POST["availIQN"];
-$blockNAME = $_POST["blockNAME"];
-echo '<script>parent.window.location.reload();</script>';
-}
-?>
 
 
 <input type="button" value="_(Done)_" onclick="done()">
