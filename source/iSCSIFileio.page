@@ -143,10 +143,11 @@ _(File IO Volumes)_
             <option value="false">false</option>
             <option value="true">true</option>
         </select>
-    </td>
-</tr>
-</table>
+    </td><td>
+
 <input type="submit" name="#apply" value='_(Add FileIO)_'>
+</  td></tr>
+</table>
 </form>
 
 

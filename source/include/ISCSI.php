@@ -229,6 +229,7 @@ case 'it1':
              echo '<input id="RmvInit" type="submit" disabled value="'._('Remove Selected Entries').'" onclick="removeInitMap();" '.'>';
              echo '<input id="addInit" type="submit"  value="'._('Add new Initiator').'" onclick="addInit();" '.'disabled >';
              echo '<input id="addMap" type="submit"  value="'._('Add new mapping').'" onclick="addMap();" '.' disabled >';
+             echo '<input id="addtgt" type="submit"  value="'._('Add new Taraget').'" onclick="addtarget();" '.' disabled >';
              echo '<span id="warning"></span>';
              echo '</td></tr>';
              echo <<<EOT

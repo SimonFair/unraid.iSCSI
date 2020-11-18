@@ -38,20 +38,20 @@ $_SESSION['availtgt'] = availtgt();
 
 
 # /iscsi/iqn.2003-01.org.linux-iscsi.tower.x8664:sn.ee5cd767532c/tpg1/luns  create /backstores/ramdisk/testramdisk add_mapped_luns=false 
-if (count($_POST)) {
+
 	if ($_POST['#applyLUN'] == "_(Add LUN)_") {
       $typename=$_POST["LUNname"];
       $tgtname=$_POST["TGTname"];
       $var=explode(";", $typename) ;
       if ($var[0]=="block") $name="/backstores/block/".$var[1] ;
-         if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
-            if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
-               if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
+      if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
+      if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
+      if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
       $cmdstr="/iscsi/".$tgtname."/tpg1/luns create ".$name." add_mapped_luns=false" ;
       processTargetcli($cmdstr) ;
     
     }
-}
+
 ?>
 
 <style>
@@ -100,6 +100,77 @@ _(Initiators)_
 <pre><form id="iscsiinits" onsubmit="return false"><table id='it1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
 
 
+<div id="title">
+        <span class="left"></span>
+    </div>
+
+<td><b>Create Target:</b></td>
+
+<form id="newtgt" method="post" >
+
+
+<input type="text" list="tgts" />
+<datalist id="tgts">
+  <option>Volvo</option>
+  <option>Saab</option>
+  <option>Mercedes</option>
+  <option>Audi</option>
+</datalist>
+
+</option>
+<input type="submit" name="#applytgt" value='_(Add Target)_'>
+</form>
+
+<div id="title">
+        <span class="left"></span>
+    </div>
+
+<td><b>Create IQN:</b></td>
+
+<form id="newiqn" method="post" >
+
+
+<input type="text" list="iqn" />
+<datalist id="tgts">
+  <option>Volvo</option>
+  <option>Saab</option>
+  <option>Mercedes</option>
+  <option>Audi</option>
+</datalist>
+
+</option>
+<input type="submit" name="#applyigm" value='_(Add IQN)_'>
+</form>
+
+<div id="title">
+        <span class="left"></span>
+    </div>
+
+<td><b>Add Mapping IQN:</b></td>
+
+<form id="newmap" method="post" >
+
+
+<input type="text" name="map" />
+<input type="text" name="lun" />
+<select name="LUNname2" >
+    <option selected="selected" value="" >Choose Storage</option>
+      <?php
+      $output = $_SESSION['availstorage'];
+
+      foreach($output as $item){
+
+      echo "<option value=\"$item\"> $item</option>";
+
+}
+?>
+</select>
+</option>
+<input type="submit" name="#applmap" value='_(Add Map)_'>
+</form>
+
+
+
 _(LUNS)_
 
 <pre><form id="iscsiluns" onsubmit="return false"><table id='it2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
@@ -139,8 +210,9 @@ Select LUN target(s) above for lun to be added to.
 
 }
 ?>
-</select>
+
 </option>
+
 <input type="submit" name="#applyLUN" value='_(Add LUN)_'>
 </form>
 
