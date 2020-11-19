@@ -77,15 +77,15 @@ if(isset($_POST['#applymap'])) {
       $typename=$_POST["newmaplunbs"];
       $newmap=$_POST["newmapnumber"];
       $var=explode(";", $typename) ;
-      if ($var[0]=="block" || $var[0]=="pscsi" || $var[0]=="ramdisk" || $var[0]=="fileio") 
-      {
-      if ($var[0]=="block") $name="/backstores/block/".$var[1] ;
-      if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
-      if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
-      if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
-      } else {
-        $name=typename ;
-      }
+      #if ($var[0]=="block" || $var[0]=="pscsi" || $var[0]=="ramdisk" || $var[0]=="fileio") 
+      #{
+      #if ($var[0]=="block") $name="/backstores/block/".$var[1] ;
+      #if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
+      #if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
+      #if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
+      #} else {
+      #  $name=typename ;
+      #}
 
       $cmdstr="/iscsi/".$tgtname."/tpg1/acls/".$iqnname." create ".$newmap." ".$name." write_protect=".writeprotect;
       processTargetcli($cmdstr) ;
@@ -142,7 +142,7 @@ _(Initiators)_
 
 
 
-<form id="newtgt" method="post" >
+<form id="newtgt" method="POST" >
 <b>_(Create Target:)_</b>
 <input type="text" name="newtgt" placeholder="Auto create random name"/>
 <input type="submit" name="#applytgt" value='_(Add Target)_'>
@@ -151,7 +151,7 @@ _(Initiators)_
 
 
 
-<form id="newiqn" method="post" >
+<form id="newiqn" method="POST" >
 <b>Create IQN:</b>
   <select name="TGTname" required>
     <option selected="selected" value="">Choose IQN</option>
@@ -172,7 +172,7 @@ _(Initiators)_
 
 
 
-<form id="newmap" method="post" >
+<form id="newmap" method="POST" >
 <b>Add Mapping IQN  :</b>
   <select name="TGTname" required>
     <option selected="selected" value="">Choose Target</option>
@@ -213,7 +213,7 @@ _(LUNS)_
 
 
 
-<form id="newLUN" method="post" >
+<form id="newLUN" method="POST" >
 Select LUN target(s) above for lun to be added to.
 
 <td><b>Create LUN:</b></td>
