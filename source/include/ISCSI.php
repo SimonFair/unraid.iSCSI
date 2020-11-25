@@ -106,7 +106,7 @@ case 'dt1':
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="rreadonly" && $line2!="name"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="name"){
                  echo "<td>".$d2."</td>";
               }          
             }
