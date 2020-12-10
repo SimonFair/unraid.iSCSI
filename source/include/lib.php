@@ -231,10 +231,17 @@ function processTargetcli($cmdstr) {
 	# Write command string a process
 	# targetctl  /tmp/string > /var/run/targetcli.last
 	#exec($cmdstr  ,$tj) ;
+	$debug=true;
     $cmd=$cmdstr."\nexit\n"  ;
     exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
 	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
-    exec($cmd, $output, $return) ;
+	exec($cmd, $output, $return) ;
+	
+	if ($debug) {
+		echo "/n" ;
+		var_dump($return) ;
+		var_dump($output) ;
+	}
    
 }
 function availstorage() {
