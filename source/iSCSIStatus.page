@@ -59,6 +59,11 @@ $('#st1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'t1'});
 $('#st2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st2'}); 
 $('#st3').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'t3'});  
 });
+
+//Don't execute commands again if page is refreshed
+if ( window.history.replaceState ) {
+window.history.replaceState( null, null, window.location.href );
+}
 </script>
 
 **_(Active Sessions)_**

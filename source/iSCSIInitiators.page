@@ -40,9 +40,7 @@ $_SESSION['availtgt'] = availtgt();
 # /iscsi/iqn.2003-01.org.linux-iscsi.tower.x8664:sn.ee5cd767532c/tpg1/luns  create /backstores/ramdisk/testramdisk add_mapped_luns=false 
 
 if (count($_POST)) {
-
-  var_dump($_POST) ;
-	if ($_POST['#applyLUN'] == "_(Add LUN)_") {
+ 	if ($_POST['#applyLUN'] == "_(Add LUN)_") {
       $typename=$_POST["LUNname"];
       $tgtname=$_POST["TGTname"];
       $var=explode(";", $typename) ;
@@ -52,25 +50,26 @@ if (count($_POST)) {
       if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
       $cmdstr="/iscsi/".$tgtname."/tpg1/luns create ".$name." add_mapped_luns=false" ;
       processTargetcli($cmdstr) ;
-    
+     
     }
 
-if(isset($_POST['#applytgt'])) {
+  if(isset($_POST['#applytgt'])) {
     if ($_POST['#applytgt'] == "_(Add Target)_") {
       $tgtname=$_POST["newtgt"];
       $cmdstr="/iscsi/ create ".$tgtname;
       processTargetcli($cmdstr) ;
-      $_POST = array();
-    }
-}
-    if ($_POST['#applyiqn'] == "_(Add IQN)_") {
+      $_SESSION['availtgt'] = availtgt();
+      }
+  }
+    
+  if ($_POST['#applyiqn'] == "_(Add IQN)_") {
       $tgtname=$_POST["TGTname"];
       $iqnname=$_POST["newiqn"];
       $cmdstr="/iscsi/".$tgtname."/tpg1/acls/ create ".$iqnname;
       processTargetcli($cmdstr) ;
-    }
+  }
 
-if(isset($_POST['#applymap'])) {
+  if(isset($_POST['#applymap'])) {
       if ($_POST['#applymap'] == "_(Add MAP)_") {
       $tgtname=$_POST["TGTname"];
       $iqnname=$_POST["newiqn"];
@@ -91,6 +90,9 @@ if(isset($_POST['#applymap'])) {
       processTargetcli($cmdstr) ;
     }
   }
+
+  
+    
 }
     
 ?>
@@ -131,6 +133,7 @@ function removeLUN() {
   }
   openBox(string,"_(Remove LUNs)_",600,600) ;
  }
+
 
 </script>
 
