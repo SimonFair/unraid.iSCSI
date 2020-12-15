@@ -36,10 +36,8 @@ if (!$fl) {
 $_SESSION['availstorage'] = availstorage();
 $_SESSION['availtgt'] = availtgt();
 
-
-# /iscsi/iqn.2003-01.org.linux-iscsi.tower.x8664:sn.ee5cd767532c/tpg1/luns  create /backstores/ramdisk/testramdisk add_mapped_luns=false 
-
 if (count($_POST)) {
+
  	if ($_POST['#applyLUN'] == "_(Add LUN)_") {
       $typename=$_POST["LUNname"];
       $tgtname=$_POST["TGTname"];
@@ -49,17 +47,16 @@ if (count($_POST)) {
       if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
       if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
       $cmdstr="/iscsi/".$tgtname."/tpg1/luns create ".$name." add_mapped_luns=false" ;
-      processTargetcli($cmdstr) ;
-     
+      processTargetcli($cmdstr) ;     
     }
 
   if(isset($_POST['#applytgt'])) {
     if ($_POST['#applytgt'] == "_(Add Target)_") {
       $tgtname=$_POST["newtgt"];
       $cmdstr="/iscsi/ create ".$tgtname;
-      processTargetcli($cmdstr) ;
+      processTargetcli($cmdstr) ;    
       $_SESSION['availtgt'] = availtgt();
-      }
+    }
   }
     
   if ($_POST['#applyiqn'] == "_(Add IQN)_") {
@@ -70,31 +67,28 @@ if (count($_POST)) {
   }
 
   if(isset($_POST['#applymap'])) {
-      if ($_POST['#applymap'] == "_(Add MAP)_") {
+      if ($_POST['#applymap'] == "_(Add Map)_") { 
       $tgtname=$_POST["TGTname"];
       $iqnname=$_POST["newiqn"];
       $typename=$_POST["newmaplunbs"];
       $newmap=$_POST["newmapnumber"];
+      $writeprotect=$_POST["write_protect"];
       $var=explode(";", $typename) ;
-      #if ($var[0]=="block" || $var[0]=="pscsi" || $var[0]=="ramdisk" || $var[0]=="fileio") 
-      #{
-      #if ($var[0]=="block") $name="/backstores/block/".$var[1] ;
-      #if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
-      #if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
-      #if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
-      #} else {
-      #  $name=typename ;
-      #}
+        if ($var[0]=="block" || $var[0]=="pscsi" || $var[0]=="ramdisk" || $var[0]=="fileio") {
+        if ($var[0]=="block") $name="/backstores/block/".$var[1] ;
+        if ($var[0]=="pscsi") $name="/backstores/pscsi/".$var[1] ;
+        if ($var[0]=="ramdisk") $name="/backstores/ramdisk/".$var[1] ;
+        if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
+        } else {
+        $name=typename ;
+        }
 
-      $cmdstr="/iscsi/".$tgtname."/tpg1/acls/".$iqnname." create ".$newmap." ".$name." write_protect=".writeprotect;
+      $cmdstr="/iscsi/".$tgtname."/tpg1/acls/".$iqnname." create ".$newmap." ".$name." write_protect=".$writeprotect;
       processTargetcli($cmdstr) ;
-    }
   }
-
-  
-    
-}
-    
+  # echo '<script>parent.window.location.reload();</script>';
+} 
+}  
 ?>
 
 <style>
@@ -113,7 +107,7 @@ $('#it2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'it2'});
 
 
 
- function removeInitMap() {
+function removeInitMap() {
   var elements = document.getElementById("iscsiinits").elements;
   var string ="/plugins/unraid.iSCSI/include/removeInitMap.php?more=1&INIT=" ;
   for (var i = 0, element; element = elements[i++];) {
@@ -146,7 +140,7 @@ _(Initiators)_
 
 
 <form id="newtgt" method="POST" >
-<b>_(Create Target:)_</b>
+<b>_(Create Target----------:)_</b>
 <input type="text" name="newtgt" placeholder="Auto create random name"/>
 <input type="submit" name="#applytgt" value='_(Add Target)_'>
 </form>
@@ -155,9 +149,9 @@ _(Initiators)_
 
 
 <form id="newiqn" method="POST" >
-<b>Create IQN:</b>
+<b>Create IQN-------------:</b>
   <select name="TGTname" required>
-    <option selected="selected" value="">Choose IQN</option>
+    <option selected="selected" value="">Choose Target</option>
       <?php
       $output = $_SESSION['availtgt'];
       
@@ -176,7 +170,7 @@ _(Initiators)_
 
 
 <form id="newmap" method="POST" >
-<b>Add Mapping IQN  :</b>
+<b>Add Mapping IQN-----:</b>
   <select name="TGTname" required>
     <option selected="selected" value="">Choose Target</option>
       <?php
@@ -217,9 +211,9 @@ _(LUNS)_
 
 
 <form id="newLUN" method="POST" >
-Select LUN target(s) above for lun to be added to.
 
-<td><b>Create LUN:</b></td>
+
+<td><b>Create LUN-------------:</b></td>
   <select name="TGTname" required>
     <option selected="selected" value="">Choose IQN</option>
       <?php

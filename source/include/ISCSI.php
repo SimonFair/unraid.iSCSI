@@ -34,36 +34,37 @@ switch ($_POST['table']) {
 // st = Status Tab Tables
 // ft = Fileio Tab Tables
 // lt = LUN Tab Tables 
-case 't1':
+// xt = Diag Tables
+case 'st1':
     exec('targetcli sessions detail',$targetcli);
     foreach ($targetcli as $line) {
              echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
        }
   break;
-case 't2':
+case 'st2':
   $t=get_iscsi_json() ;
   $b=build_iscsi_devices($t) ; 
   if (!in_array("/dev/disk/by-id/usb-Sony_Hard_Drive_235853211C8A-0:1" ,$b , true)) echo "found drive" ;
   break;
-case 't3':
+case 'st3':
     exec('targetcli ls',$targetcli);
     foreach ($targetcli as $line) {
       echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
     }
     break;
-case 't4':
+case 'st4':
     exec('lsblk -S'  ,$lsscsi);
         foreach ($lsscsi as $line) {
       echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
      }   
     break;
-case 'st2':
+case 'xt1':
       exec('cat /var/run/targetcli.last'  ,$TC);
           foreach ($TC as $line) {
         echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
        }   
       break;
-      case 'st4':
+case 'xt2':
         exec('cat /tmp/iscsicmd.run'  ,$TC);
             foreach ($TC as $line) {
           echo "<tr><td>".preg_replace('/\]  +/',']</td><td>',$line)."</td></tr>";
@@ -264,7 +265,7 @@ EOT;
   echo "</tr><tr>" ;
   $i=1;
   $iscsitgt="iscsiltgt;".$targetname.';;' ;
-    echo '<td><input type="checkbox"  class="iscsiltgt'.$j++.'" value="'.$iscsitgt.'">'  ;
+    echo '<td><input type="checkbox"  disabled class="iscsiltgt'.$j++.'" value="'.$iscsitgt.'">'  ;
     echo "    ".$targetname."</td>\n" ;
     echo "</tr><tr>" ; 
   

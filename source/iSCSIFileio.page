@@ -57,9 +57,10 @@ require_once "$docroot/plugins/$plugin/include/lib.php";
 
 if (count($_POST)) {
 	if ($_POST['#apply'] == "_(Add FileIO)_") {
+  
       $size = $_POST["size"];
       $name = $_POST["name"];
-      $path = $_POST["tstpathfromjs"];
+      $path = $_POST["sharefolder"];
       $writeback = $_POST["write_back"];
       $cmdstr="/backstores/fileio create ".$name." ".$path.$name.".img ".$size." write_back=".$writeback ;
       processTargetcli($cmdstr) ;
@@ -98,17 +99,9 @@ function removeFIO() {
   openBox(string,"_(Remove File IO)_",600,800) ;
 }
 
-  $(function(){
-  $("#destinationShare").fileTreeAttach();
-});
+
 </script>
 
-<script>
-function path_selected() {
-  var share = $("#fiodestinationShare").val();
-  document.getElementById("fiopathfromjs").value = share;
-}
-</script>
 
 
 
@@ -134,7 +127,7 @@ _(File IO Volumes)_
 <tr style="height:20px;">
     <td>
         <input id="pathfromjs" name="fiopathfromjs" type="hidden"></input>
-        <input type='text' size="15" class='setting' id="fiodestinationShare" placeholder="/mnt/user/" name="shareFolder" data-pickroot="/mnt" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
+        <input type='text' size="15" class='setting' id="fiodestinationShare" placeholder="/mnt/user/" name="sharefolder" data-pickroot="/mnt/user" data-pickfilter="HIDE_FILES_FILTER" data-pickfolders="true" onchange="path_selected()" required>
     </td>
     <td><input type = "text" style="width: 100px;" name = "name" placeholder="fileIO" required> .img</td>
     <td> <input type = "text" name = "size" placeholder="20G" required></td>
@@ -146,7 +139,7 @@ _(File IO Volumes)_
     </td><td>
 
 <input type="submit" name="#apply" value='_(Add FileIO)_'>
-</  td></tr>
+</td></tr>
 </table>
 </form>
 

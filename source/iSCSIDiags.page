@@ -55,8 +55,8 @@ table tr td.thin{line-height:8px;height:8px}
 
 <script>
 $(function(){
-$('#st2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st2'}); 
-$('#st4').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st4'});  
+$('#xt1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'xt1'}); 
+$('#xt2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'xt2'});  
 });
 
 $(function() {
@@ -68,11 +68,11 @@ $(function() {
 
 **_(Last Targetcli output)_**
 
-<pre><table id='st2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
+<pre><table id='xt1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
 
 **_(Last Commands Processed)_**
 
-<pre><table id='st4' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
+<pre><table id='xt2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></pre><br>
 
 <input type="button" value="_(Done)_" onclick="done()">
 

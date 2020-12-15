@@ -54,16 +54,15 @@ table tr td.thin{line-height:8px;height:8px}
 </style>
 
 <script>
-$(function(){
-$('#st1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'t1'});  
-$('#st2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st2'}); 
-$('#st3').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'t3'});  
-});
-
-//Don't execute commands again if page is refreshed
 if ( window.history.replaceState ) {
 window.history.replaceState( null, null, window.location.href );
 }
+
+$(function(){
+$('#st1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st1'});  
+$('#st2').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st2'}); 
+$('#st3').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'st3'});  
+});
 </script>
 
 **_(Active Sessions)_**
