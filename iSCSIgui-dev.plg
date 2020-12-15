@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "unraid.iSCSI">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2020.12.10">
+<!ENTITY version   "2020.12.15">
 <!ENTITY launch    "Tools/iSCSI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL "&gitURL;/iSCSIgui-dev.plg">
