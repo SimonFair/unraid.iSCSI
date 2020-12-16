@@ -47,20 +47,39 @@ div.closed{display:none}
 
     $new = $_GET["DEV"] ;
     $delete =$_GET["Remove"] ;
+    $nicknames=explode(";", $_GET["nicknames"]) ;
+    $nc=count($nicknames) -1 ;
+    $ni=0 ;
+    $blockdevs=array() ;
+    do {
+       
+       $blockdevice[$nicknames[$ni+1]] = array(
+            "by-id"=>$nicknames[$ni+2],  
+            "nickname"=>$nicknames[$ni+3] ) ;
+   
+
+        $ni=$ni+4 ;
+        } while ($ni<$nc) ;
+
+    
     $newe=$x=explode(";", $new) ;
     $cmd="" ;
     $c = count($newe) -1 ;
     $i = $ii = 0 ;
+
     do {
        
     $devtype=$newe[$i+1] ;
-    $devbyid=$newe[($i+2)] ;
+    $devblock=$newe[($i+2)] ;
+    $devbyid=$blockdevice[$devblock]["by-id"] ;
     $devexist=$newe[($i+3)] ;
     $devchange=$newe[($i+4)] ;
     $devro=$newe[($i+8)] ;
     $devrochange=$newe[($i+9)] ;
-    $devname=substr($devbyid, 16) ;
-    
+ 
+    if ($blockdevice[$devblock]["nickname"]=="") 
+        $devname=substr($devbyid, 16) ;
+    else $devname=$blockdevice[$devblock]["nickname"] ;
        
     if ($ii) echo "<br><span class='key'></span>&nbsp;";
     if ($devexist=="true" && $devchange =="false")  { 

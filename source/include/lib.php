@@ -62,11 +62,14 @@ function get_unassigned_disks() {
 			if (in_array($path, $unraid_disks)) $unraid=true ; else $unraid=false ;
 				$m=$b[$path]['children'] ;
 				if ($m==null && $b[$path]['type']=="rom" && $b[$path]['fstype']!='') $m=array($b[$path]) ;
-                $ro=0 ;
+                $ro=0 ; $LIOname = "" ;
 				if (array_search($d , array_column($LIOdevices, 'dev')) !==false || array_search($path , array_column($LIOdevices, 'dev')) !==false) $defined = true ; else $defined=false; 
 				if ($defined) {
 					$k=array_search($d , array_column($LIOdevices, 'dev'), true) ;
-					if ($k === 0) $ro=$LIOdevices[$k]["readonly"] ;
+					if ($k !== false) {
+						$ro=$LIOdevices[$k]["readonly"] ;
+					    $LIOname=$LIOdevices[$k]["name"] ;
+					}
 					else $ro = 0 ;
 				}
 				  
@@ -85,7 +88,9 @@ function get_unassigned_disks() {
 									"bpartitions"=>$m,
 									"defined"=> $defined,
 									"readonly"=> $ro ,
-									"name"=>$b[$path]["name"]
+									"nickname"=>$LIOname ,
+									"name"=>$b[$path]['name']
+		
 		) ;
 
 		}

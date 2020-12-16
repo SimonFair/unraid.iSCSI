@@ -48,7 +48,7 @@ $('#dt1').load('/plugins/unraid.iSCSI/include/ISCSI.php',{table:'dt1'});
 var optdel=0 ;
 function applyCfgDev() {
   var elements = document.getElementById("iscsidev").elements;
-  var string ="" ;
+  var string ="" ; nicknames=""
   for (var i = 0, element; element = elements[i++];) {
     if (element.type === "checkbox" && element.value !=="" ) {
     string = string + element.value +';'+ element.checked +";";
@@ -59,17 +59,18 @@ function applyCfgDev() {
     
     if (type === "iscsiset" && current === "true" && checked === false) {
          optdel = 1 ;
+        }
     
     }
-    }
+     if (element.type === "text"  && element.hidden !== true)  nicknames=nicknames + element.name + element.value + ";"
   }
 if (optdel === 1)
   {
-  string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=Yes&DEV=" + string ; 
+  string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=Yes&DEV=" + string + "&nicknames=" + nicknames; 
   openBox(string,"_(Remove Block Devices)_",600,800) ;
   }
   else {
-    string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=No&DEV=" + string ; 
+    string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=No&DEV=" + string + "&nicknames=" + nicknames; 
     openBox(string,"_(Add Block Devices)_",600,800) ;
     
    }

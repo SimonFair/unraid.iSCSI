@@ -2,3 +2,5 @@
 source/testinput.page
 source/testinput copy.page
 source/iSCSITest.page
+source/iSCSIDebug.page
+source/include/debug.php

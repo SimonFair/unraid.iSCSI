@@ -74,10 +74,10 @@ case 'dt1':
         $groups=get_unassigned_disks() ;
 
                
-       echo "</tr><tr><td>Status      Readonly\n    Selection</td><td>Device</td>" ;
+       echo "</tr><tr><td>Status      Readonly\n    Selection     User Defined Name </td><td>Block Name</td>" ;
         
          foreach ($groups[array_key_first($groups)] as $line2=>$d2) {
-          if ($line2!="defined" && $line2!="partitions" && $line2!="unraid" && $line2!="definedx" && $line2!="by-id" && $line2!="bpartitions" && $line2!="readonly" && $line2!="name") {
+          if ($line2!="defined" && $line2!="partitions" && $line2!="unraid" && $line2!="nickname" && $line2!="by-id" && $line2!="bpartitions" && $line2!="readonly" && $line2!="name") {
             echo '<td>'.ucwords($line2)."</td>";
           }
         }
@@ -96,18 +96,23 @@ case 'dt1':
             
           echo "<td> <i class=\"fa fa-circle orb ".$colour."-orb middle\" title=\""._($text)."\"></i>";
 
-          $iscsiset="iscsiset;".$device["type"].';'.$device["device"].';'.($defined ? "true" : "false") ;
-          $iscsiro="iscsiro;".$device["type"].';'.$device["device"].';'.($readonly ? "true" : "false") ;
+          $iscsiset="iscsiset;".$device["type"].';'.$device["name"].';'.($defined ? "true" : "false") ;
+          $iscsiro="iscsiro;".$device["type"].';'.$device["name"].';'.($readonly ? "true" : "false") ;
+          $iscsinickname="iscsinickname".';'.$device["name"] .';'.$device["device"] .';' ;
           if ($device["type"]=="rom") $rodisabled=" disabled " ; else $rodisabled="" ;
             
           echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsi'.$dname.'" value="'.$iscsiset.'" '  ;
           echo ($defined && !$unraid) ? " checked>" : ">";
           echo $unraid ? '   <input type="checkbox" value="" title="'._('In use by Unraid').'" disabled ' : '   <input type="checkbox" class="iscsiro'.$dname.'" value="'.$iscsiro.'"'.$rodisabled  ;
           echo ($readonly && !$unraid) ? " checked>" : ">";
+          echo '<input type="text" style="width: 100px;" name="'.$iscsinickname.'" placeholder="Use by-id" ' ;
+          if ($device["name"] != "") echo 'value="'.$device["nickname"].'" ' ;
+          echo $unraid ? ' hidden disabled '  : ' ' ;
+          echo ($defined && !$unraid) ? " disabled >" : ">";
           echo "</td><td> ".$line."</td>";
 
             foreach ($device as $line2=>$d2) {
-              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="definedx" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="name"){
+              if ($line2!="defined" && $line2!="partitions" && $line2!="unraid"  && $line2!="nicknamex" && $line2!="by-id" &&$line2!="bpartitions" && $line2!="readonly" && $line2!="namex"){
                  echo "<td>".$d2."</td>";
               }          
             }
