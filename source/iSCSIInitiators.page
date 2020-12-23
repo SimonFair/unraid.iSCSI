@@ -86,7 +86,7 @@ if (count($_POST)) {
       $cmdstr="/iscsi/".$tgtname."/tpg1/acls/".$iqnname." create ".$newmap." ".$name." write_protect=".$writeprotect;
       processTargetcli($cmdstr) ;
   }
-  # echo '<script>parent.window.location.reload();</script>';
+   echo '<script>parent.window.location.reload();</script>';
 } 
 }  
 ?>

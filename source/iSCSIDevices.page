@@ -70,11 +70,45 @@ if (optdel === 1)
   openBox(string,"_(Remove Block Devices)_",600,800) ;
   }
   else {
-    string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=No&DEV=" + string + "&nicknames=" + nicknames; 
-    openBox(string,"_(Add Block Devices)_",600,800) ;
-    
+//    $("#extendedStatus").html("Adding Block devices ......");
+    myAlert("Adding Block Devices","Now adding devices.  This may take a minute.<br><br><span id='currentTest'></span>","","",false,false,false,"info");
+//    string = "/plugins/unraid.iSCSI/include/updateblockdevices.php?Remove=No&DEV=" + string + "&nicknames=" + nicknames; 
+//    openBox(string,"_(Add Block Devices)_",600,800) ;
+//
+     $.get( "/plugins/unraid.iSCSI/include/updateblockdevices.php", { DEV: string , Remove:"No" , nicknames: nicknames} )
+                           .done(function(d) {
+                             myCloseAlert()
+                              
+                             parent.window.location.reload() ;
+                             }) ;
+                             
+                  
    }
 
+}
+
+
+function myAlert(description,textdescription,textimage,imagesize, outsideClick, showCancel, showConfirm, alertType) {
+  if ( !outsideClick ) outsideClick = false;
+  if ( !showCancel )   showCancel = false;
+  if ( !showConfirm )  showConfirm = false;
+  if ( imagesize == "" ) { imagesize = "80x80"; }
+   
+  swal({
+    title: description,
+    text: textdescription,
+    imageUrl: textimage,
+    imageSize: imagesize,
+    allowOutsideClick: outsideClick,
+    showConfirmButton: showConfirm,
+    showCancelButton: showCancel,
+    type: alertType,
+    html: true
+  });
+}
+
+function myCloseAlert() {
+  swal.close();
 }
 </script>
 
