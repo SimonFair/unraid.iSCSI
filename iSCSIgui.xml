@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Containers>
 <Plugin>True</Plugin>
-<PluginURL>https://github.com/SimonFair/unraid.iSCSI/raw/main/iSCSI.plg</PluginURL>
+<PluginURL>https://github.com/SimonFair/unraid.iSCSI/raw/main/iSCSIgui.plg</PluginURL>
 <PluginAuthor>SimonFair</PluginAuthor>
 <Beta>True</Beta>
 <Category>Other: Drivers:</Category>
-<Name>unraid.iSCSI</Name>
+<Name>unraid.iSCSIGUI</Name>
 <DonateText>If you wanna buy me a coffee.</DonateText>
 <DonateLink>https://paypal.me/SimonNFairweather?locale.x=en_GB</DonateLink>
 <DonateImage>https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_74x21.png</DonateImage>
