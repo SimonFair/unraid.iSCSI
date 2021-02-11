@@ -4,20 +4,20 @@
 <PluginURL>https://github.com/SimonFair/unraid.iSCSI/raw/main/iSCSI.plg</PluginURL>
 <PluginAuthor>SimonFair</PluginAuthor>
 <Beta>True</Beta>
-<Category>Other:</Category>
+<Category>Other: Drivers:</Category>
 <Name>unraid.iSCSI</Name>
 <DonateText>If you wanna buy me a coffee.</DonateText>
 <DonateLink>https://paypal.me/SimonNFairweather?locale.x=en_GB</DonateLink>
 <DonateImage>https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_74x21.png</DonateImage>
 <Description>
-The iSCSI plugin allows you to view your iSCSI config and in time to update. Currently buttons do not functon.
+The iSCSI GUI plugin allows you to view your iSCSI config.
 
 Kernel needs to support iSCSI, see Kernel Helper by ich777
 </Description>
 <Support>https://forums.unraid.net/topic/98483-plugin-iscsi-gui/</Support>
 <Date>2020-10-28</Date>
 <Changes>
-Initial Release still WIP(Beta) Buttons don't function.
+Initial Release still Beta
 </Changes>
 <IconFA>cogs</IconFA>
 </Containers>
