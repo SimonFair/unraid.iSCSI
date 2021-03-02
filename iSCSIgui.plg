@@ -83,14 +83,6 @@ echo " "
 echo " Copyright 2016-2020, &author;"
 echo " Version: &version;"
 echo ""
-echo " Note:"
-echo " Install the Unassigned Devices Plus plugin if you need to"
-echo " mount exFAT or HFS+ file formats, or format disks."
-if [ $mounted_disks == "y" ]; then
-  echo ""
-  echo " PLEASE REBOOT YOUR SERVER "
-  echo ""
-fi
 echo "-----------------------------------------------------------"
 echo ""
 </INLINE>
