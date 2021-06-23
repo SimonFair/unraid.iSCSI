@@ -75,6 +75,111 @@ find /boot/config/plugins/&name; -maxdepth 1 -type f -iname "*.t*z" -delete
 find &packages; -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
 find &packages; -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
 
+# iSCSI Target installation
+#Wait for Network and timeout after 30 seconds
+HOST="8.8.8.8"
+for i in {1..10}; do
+  ping -c1 $HOST &amp;> /dev/null &amp;&amp; break;
+done
+
+if [ ! -d "&plugin;/packages/${KERNEL_V%%-*}" ]; then
+  mkdir -p "&plugin;/packages/${KERNEL_V%%-*}"
+fi
+
+#Check for old packages
+rm -rf $(ls -d &plugin;/packages/* | grep -v "${KERNEL_V%%-*}")
+
+download() {
+#Download iSCSI Target
+if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" "${DL_URL}/${PACKAGE}-1.txz" ; then
+  if [ "$(md5sum "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" | cut -d ' ' -f1)" != "$(wget -qO- "${DL_URL}/${PACKAGE}-1.txz.md5" | cut -d ' ' -f1)" ]; then
+    if [ -d &plugin; ]; then
+      rm -rf &plugin;
+    fi
+    echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
+    echo "--------------------------------CHECKSUM ERROR!---------------------------------"
+    exit 1
+  fi
+  echo "-------------Successfully downloaded iSCSI Target, please wait...!-------------"
+else
+  echo "----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
+  echo "------------------------Can't download iSCSI Target----------------------------"
+  exit 1
+fi
+}
+
+check() {
+if [ ! -f "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
+  echo "+=============================================================================="
+  echo "| WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING"
+  echo "|"
+  echo "| Don't close this window with the red 'X' in the top right corner until the 'DONE' button is displayed!"
+  echo "|"
+  echo "| WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING"
+  echo "+=============================================================================="
+  echo
+  echo "------------------Downloading iSCSI Target, please wait...!--------------------"
+  echo "-----------This could take some time, please don't close this window!----------"
+  download
+elif [ ! -s "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
+  rm -rf &plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz
+  echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR-----"
+  echo "-----Download is empty please contact the developer of this plugin if the------"
+  echo "-------plugin has been already built against the current Kernel version--------"
+  exit 1
+else
+  echo "--------------------------iSCSI Target found locally!--------------------------"
+fi
+}
+
+install() {
+#Install iSCSI Target
+/sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz"
+}
+
+patch() {
+#Patching files and creating necessary direcotries/symlinks
+if [ ! -d /etc/target ]; then
+  mkdir -p /etc/target
+fi
+if [ ! -d /root/.targetcli ]; then
+  mkdir -p /root/.targetcli
+fi
+if [ ! -d /boot/config/iscsi/.targetcli ]; then
+  mkdir -p /boot/config/iscsi/.targetcli
+fi
+ln -s /boot/config/iscsi/saveconfig.json /etc/target/saveconfig.json
+ln -s /boot/config/iscsi/.targetcli/prefs.bin /root/.targetcli/prefs.bin
+
+#Load/unload iSCSI Target on Array start/stop
+echo "
+# Load iSCSI configuration
+echo 'Loading iSCSI configuration'
+targetcli restoreconfig &amp;" >> /usr/local/emhttp/plugins/dynamix/event/disks_mounted/local_syslog_start
+	echo "
+# Unload iSCSI configuration
+echo 'Unloading iSCSI configuration'
+targetcli clearconfig confirm=True &amp;" >> /usr/local/emhttp/plugins/dynamix/event/unmounting_disks/local_syslog_stop
+}
+
+start() {
+#Starting Targetcli-FB
+echo "---------------------Starting iSCSI Target, please wait...!--------------------"
+targetcli restoreconfig
+}
+
+# Define variables
+KERNEL_V="$(uname -r)"
+PACKAGE="iscsi-plugin-${KERNEL_V}"
+DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download/$KERNEL_V"
+
+#Check if iSCSI Target is allready downloaded
+check
+install > /dev/null
+patch
+if [ ! -z "$(pidof emhttpd)" ]; then
+	start
+fi
 
 echo ""
 echo "-----------------------------------------------------------"
