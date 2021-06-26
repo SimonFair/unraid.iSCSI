@@ -239,7 +239,7 @@ function processTargetcli($cmdstr) {
 	
     $cmd=$cmdstr."\nexit\n"  ;
     exec("echo \"$cmd\" >/tmp/iscsicmd.run", $output, $myreturn );
-	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last";
+	$cmd="targetcli </tmp/iscsicmd.run >/var/run/targetcli.last 2>&1";
 	exec($cmd, $output, $return) ;
 	return($return) ;
    
