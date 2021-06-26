@@ -75,6 +75,11 @@ chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
 find /boot/config/plugins/&name; -maxdepth 1 -type f -iname "*.t*z" -delete
 find &packages; -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
 find &packages; -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
+	
+# Define variables
+KERNEL_V="$(uname -r)"
+PACKAGE="iscsi-plugin-${KERNEL_V}"
+DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download/$KERNEL_V"
 
 # iSCSI Target installation
 #Wait for Network and timeout after 30 seconds
