@@ -4,13 +4,13 @@
 <!ENTITY name      "unraid.iSCSI">
 <!ENTITY plugin    "/boot/config/plugins/&name;">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2020.12.23">
-<!ENTITY launch    "Tools/iSCSI">
+<!ENTITY version   "2021.06.27">
+<!ENTITY launch    "Settings/iSCSI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/">
 <!ENTITY packages	"/boot/config/plugins/&name;/packages">
-<!ENTITY MD5		"d1ce06746a0110f557166e50f05f28bf">
+<!ENTITY md5		"6161933bd1108014527afef6628082dd">
 ]>
 
 <PLUGIN name="&name;"
@@ -19,13 +19,19 @@
 		version="&version;"
 		pluginURL="&pluginURL;"
 		support="&supportURL;"
-		icon="unlock-alt"
-		min="6.7.0">
+		icon="iscsi.png"
+		min="6.9.0">
 
 <CHANGES>
 ##&name;
 ###&version;
-28th Update
+
+ - Update iSCSI icon from Tools to Settings.
+ - Enhancement Include Target CLI package in install
+ - Notice If you have iSCSI Target plugin installed this is no longer required for this plugin to function. ich777 plans to depreciate his plugin as the two are being merged.
+ - Update Move to package install with md5.
+
+2020.12.23
 
 - initial release.
 </CHANGES>
@@ -46,10 +52,10 @@ rm -f $(ls &packages;/*.tgz 2>/dev/null | grep -v '&version;')
 <!--
 Get the plugin bundle.
 -->
-<FILE Name="&packages;/&name;-&version;.tgz">
-<URL>"&gitURL;/&name;-&version;.tgz"</URL>
+<FILE Name="&packages;/&name;-&version;.txz" Run="upgradepkg --install-new &packages;/&name;*%&packages;/&name;-&version;.txz">
+<URL>"&gitURL;/&name;-&version;.txz"</URL>
+<MD5>&md5;</MD5>
 </FILE>
-
 
 <!--
 The 'post-install' script.
@@ -204,6 +210,8 @@ The 'remove' script.
 -->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
+
+removepkg &packages;/&name;-&version;.txz 
 
 # Remove installed packages
 find "&packages;/" -type f -iname "*.txz" -delete
