@@ -1,4 +1,4 @@
-Menu="iSCSITools:4"
+Menu="iSCSISettings:4"
 Title="FileIO"
 Tag="file"
 Cond="$fl !=1 ;"

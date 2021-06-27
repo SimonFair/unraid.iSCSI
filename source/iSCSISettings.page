@@ -1,5 +1,6 @@
-Menu="SystemInformation"
+Menu="Utilities"
 Title="iSCSI"
 Type="xmenu"
 Tabs="true"
+Icon="iscsi.png"
 ---

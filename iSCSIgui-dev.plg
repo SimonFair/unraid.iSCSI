@@ -2,14 +2,15 @@
 
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "unraid.iSCSI">
+<!ENTITY plugin    "/boot/config/plugins/&name;">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2020.12.23">
-<!ENTITY launch    "Tools/iSCSI">
+<!ENTITY version   "2020.06.27">
+<!ENTITY launch    "Settings/iSCSI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
-<!ENTITY pluginURL "&gitURL;/iSCSIgui-dev.plg">
+<!ENTITY pluginURL "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/">
 <!ENTITY packages	"/boot/config/plugins/&name;/packages">
-<!ENTITY MD5		"d1ce06746a0110f557166e50f05f28bf">
+<!ENTITY MD5		"6161933bd1108014527afef6628082dd">
 ]>
 
 <PLUGIN name="&name;"
@@ -18,7 +19,7 @@
 		version="&version;"
 		pluginURL="&pluginURL;"
 		support="&supportURL;"
-		icon="unlock-alt"
+		icon="iscsi.png"
 		min="6.7.0">
 
 <CHANGES>
@@ -45,8 +46,9 @@ rm -f $(ls &packages;/*.tgz 2>/dev/null | grep -v '&version;')
 <!--
 Get the plugin bundle.
 -->
-<FILE Name="&packages;/&name;-&version;.tgz">
-<URL>"&gitURL;/&name;-&version;.tgz"</URL>
+<FILE Name="&packages;/&name;-&version;.txz" Run="upgradepkg --install-new &packages;/&name;*%&packages;/&name;-&version;.txz">
+<URL>"&gitURL;/&name;-&version;.txz"</URL>
+<MD5>&md5;</MD5>
 </FILE>
 
 
@@ -64,7 +66,7 @@ mkdir /usr/local/emhttp/plugins/&name; 2>/dev/null
 find "&packages;/" -type f -iname "*.txz" -delete
 
 # Install the 'bundle'.
-tar -vxf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
+tar -xf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
 
 # Adjust plugin permissions.
 chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
@@ -74,7 +76,117 @@ chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
 find /boot/config/plugins/&name; -maxdepth 1 -type f -iname "*.t*z" -delete
 find &packages; -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
 find &packages; -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
+	
+# Define variables
+KERNEL_V="$(uname -r)"
+PACKAGE="iscsi-plugin-${KERNEL_V}"
+DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download/$KERNEL_V"
 
+# iSCSI Target installation
+#Wait for Network and timeout after 30 seconds
+HOST="8.8.8.8"
+for i in {1..10}; do
+  ping -c1 $HOST &amp;> /dev/null &amp;&amp; break;
+done
+
+if [ ! -d "&plugin;/packages/${KERNEL_V%%-*}" ]; then
+  mkdir -p "&plugin;/packages/${KERNEL_V%%-*}"
+fi
+
+#Check for old packages
+rm -rf $(ls -d &plugin;/packages/* | grep -v "${KERNEL_V%%-*}")
+
+download() {
+#Download iSCSI Target
+if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" "${DL_URL}/${PACKAGE}-1.txz" ; then
+  if [ "$(md5sum "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" | cut -d ' ' -f1)" != "$(wget -qO- "${DL_URL}/${PACKAGE}-1.txz.md5" | cut -d ' ' -f1)" ]; then
+    if [ -d &plugin; ]; then
+      rm -rf &plugin;
+    fi
+    echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
+    echo "--------------------------------CHECKSUM ERROR!---------------------------------"
+    exit 1
+  fi
+  echo "-------------Successfully downloaded iSCSI Target, please wait...!-------------"
+else
+  echo "----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
+  echo "------------------------Can't download iSCSI Target----------------------------"
+  exit 1
+fi
+}
+
+check() {
+if [ ! -f "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
+  echo "+=============================================================================="
+  echo "| WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING"
+  echo "|"
+  echo "| Don't close this window with the red 'X' in the top right corner until the 'DONE' button is displayed!"
+  echo "|"
+  echo "| WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING"
+  echo "+=============================================================================="
+  echo
+  echo "------------------Downloading iSCSI Target, please wait...!--------------------"
+  echo "-----------This could take some time, please don't close this window!----------"
+  download
+elif [ ! -s "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
+  rm -rf &plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz
+  echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR-----"
+  echo "-----Download is empty please contact the developer of this plugin if the------"
+  echo "-------plugin has been already built against the current Kernel version--------"
+  exit 1
+else
+  echo "--------------------------iSCSI Target found locally!--------------------------"
+fi
+}
+
+install() {
+#Install iSCSI Target
+/sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz"
+}
+
+patch() {
+#Patching files and creating necessary direcotries/symlinks
+if [ ! -d /etc/target ]; then
+  mkdir -p /etc/target
+fi
+if [ ! -d /root/.targetcli ]; then
+  mkdir -p /root/.targetcli
+fi
+if [ ! -d /boot/config/iscsi/.targetcli ]; then
+  mkdir -p /boot/config/iscsi/.targetcli
+fi
+ln -s /boot/config/iscsi/saveconfig.json /etc/target/saveconfig.json
+ln -s /boot/config/iscsi/.targetcli/prefs.bin /root/.targetcli/prefs.bin
+
+#Load/unload iSCSI Target on Array start/stop
+echo "
+# Load iSCSI configuration
+echo 'Loading iSCSI configuration'
+targetcli restoreconfig &amp;" >> /usr/local/emhttp/plugins/dynamix/event/disks_mounted/local_syslog_start
+	echo "
+# Unload iSCSI configuration
+echo 'Unloading iSCSI configuration'
+targetcli clearconfig confirm=True &amp;" >> /usr/local/emhttp/plugins/dynamix/event/unmounting_disks/local_syslog_stop
+}
+
+start() {
+#Starting Targetcli-FB
+echo "---------------------Starting iSCSI Target, please wait...!--------------------"
+targetcli restoreconfig
+}
+
+# Define variables
+KERNEL_V="$(uname -r)"
+PACKAGE="iscsi-plugin-${KERNEL_V}"
+DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download/$KERNEL_V"
+
+#Check if iSCSI Target is allready downloaded
+check
+install > /dev/null
+patch
+if [ ! -z "$(pidof emhttpd)" ]; then
+	start
+fi
 
 echo ""
 echo "-----------------------------------------------------------"
@@ -83,14 +195,6 @@ echo " "
 echo " Copyright 2016-2020, &author;"
 echo " Version: &version;"
 echo ""
-echo " Note:"
-echo " Install the Unassigned Devices Plus plugin if you need to"
-echo " mount exFAT or HFS+ file formats, or format disks."
-if [ $mounted_disks == "y" ]; then
-  echo ""
-  echo " PLEASE REBOOT YOUR SERVER "
-  echo ""
-fi
 echo "-----------------------------------------------------------"
 echo ""
 </INLINE>
