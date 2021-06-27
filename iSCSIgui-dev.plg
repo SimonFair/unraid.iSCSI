@@ -4,7 +4,7 @@
 <!ENTITY name      "unraid.iSCSI">
 <!ENTITY plugin    "/boot/config/plugins/&name;">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2020.06.27">
+<!ENTITY version   "2021.06.27">
 <!ENTITY launch    "Settings/iSCSI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL "&gitURL;/iSCSIgui.plg">
