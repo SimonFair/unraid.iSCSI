@@ -10,7 +10,7 @@
 <!ENTITY pluginURL "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/">
 <!ENTITY packages	"/boot/config/plugins/&name;/packages">
-<!ENTITY MD5		"6161933bd1108014527afef6628082dd">
+<!ENTITY md5		"6161933bd1108014527afef6628082dd">
 ]>
 
 <PLUGIN name="&name;"
