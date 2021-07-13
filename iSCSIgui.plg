@@ -1,16 +1,16 @@
 <?xml version='1.0' standalone='yes'?>
 
 <!DOCTYPE PLUGIN [
-<!ENTITY name      "unraid.iSCSI">
-<!ENTITY plugin    "/boot/config/plugins/&name;">
-<!ENTITY author    "SimonFair">
-<!ENTITY version   "2021.06.27">
-<!ENTITY launch    "Settings/iSCSISettings">
-<!ENTITY gitURL    "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
-<!ENTITY pluginURL "&gitURL;/iSCSIgui.plg">
-<!ENTITY supportURL	"https://forums.unraid.net/">
-<!ENTITY packages	"/boot/config/plugins/&name;/packages">
-<!ENTITY md5		"6161933bd1108014527afef6628082dd">
+<!ENTITY name       "unraid.iSCSI">
+<!ENTITY plugin     "/boot/config/plugins/&name;">
+<!ENTITY author     "SimonFair">
+<!ENTITY version    "2.1.54-1">
+<!ENTITY launch     "Settings/iSCSISettings">
+<!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
+<!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
+<!ENTITY supportURL "https://forums.unraid.net/topic/98483-plugins-iscsi-gui-and-iscsi-target/">
+<!ENTITY packageURL "&gitURL;/packages/iSCSI-plugin-&version;.txz">
+<!ENTITY md5        "b9fb11cf65ed0ebae3343685501e4a04">
 ]>
 
 <PLUGIN name="&name;"
@@ -23,132 +23,36 @@
 		min="6.9.0">
 
 <CHANGES>
-##&name;
-###&version;
 
- - Update iSCSI icon from Tools to Settings.
- - Enhancement Include Target CLI package in install
- - Notice If you have iSCSI Target plugin installed this is no longer required for this plugin to function. ich777 plans to depreciate his plugin as the two are being merged.
- - Update Move to package install with md5.
+###2021.07.13
+- Update plugin to include everything necessary for through the plugin installation
+- Based on iSCSI-plugin v2.1.54-1
+- Cleanup
 
-2020.12.23
+###2021.06.27
+- Update iSCSI icon from Tools to Settings.
+- Enhancement Include Target CLI package in install
+- Notice If you have iSCSI Target plugin installed this is no longer required for this plugin to function. ich777 plans to depreciate his plugin as the two are being merged.
+- Update Move to package install with md5.
 
+###2020.12.23
 - initial release.
+
 </CHANGES>
 
-<!--
-The 'pre-install' script.
--->
 <FILE Run="/bin/bash">
 <INLINE>
-# Remove emhttp files so we can re-install.
-rm -rf /usr/local/emhttp/plugins/&name;/* 2>/dev/null
-
-# Remove old 'bundle' files.
-rm -f $(ls &packages;/*.tgz 2>/dev/null | grep -v '&version;')
+rm -f $(ls &plugin;/iSCSI-plugin-*.txz 2>/dev/null|grep -v '&version;')
 </INLINE>
 </FILE>
 
-<!--
-Get the plugin bundle.
--->
-<FILE Name="&packages;/&name;-&version;.txz" Run="upgradepkg --install-new &packages;/&name;*%&packages;/&name;-&version;.txz">
-<URL>"&gitURL;/&name;-&version;.txz"</URL>
+<FILE Name="&plugin;/iSCSI-plugin-&version;.txz" Run="upgradepkg --install-new">
+<URL>&packageURL;</URL>
 <MD5>&md5;</MD5>
 </FILE>
 
-<!--
-The 'post-install' script.
--->
 <FILE Run="/bin/bash">
 <INLINE>
-# Install the plugin bundle.
-# Create plugin directory
-mkdir /boot/config/plugins/&name; 2>/dev/null
-mkdir /usr/local/emhttp/plugins/&name; 2>/dev/null
-
-# Remove old packages
-find "&packages;/" -type f -iname "*.txz" -delete
-
-# Install the 'bundle'.
-tar -xf &packages;/&name;-&version;.tgz -C /usr/local/emhttp/plugins/&name; 2>/dev/null
-
-# Adjust plugin permissions.
-chmod 755 -R /usr/local/emhttp/plugins/&name; 2>/dev/null
-
-
-# Clean out old plugin packages
-find /boot/config/plugins/&name; -maxdepth 1 -type f -iname "*.t*z" -delete
-find &packages; -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
-find &packages; -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
-	
-# Define variables
-KERNEL_V="$(uname -r)"
-PACKAGE="iscsi-plugin-${KERNEL_V}"
-DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download/$KERNEL_V"
-
-# iSCSI Target installation
-#Wait for Network and timeout after 30 seconds
-HOST="8.8.8.8"
-for i in {1..10}; do
-  ping -c1 $HOST &amp;> /dev/null &amp;&amp; break;
-done
-
-if [ ! -d "&plugin;/packages/${KERNEL_V%%-*}" ]; then
-  mkdir -p "&plugin;/packages/${KERNEL_V%%-*}"
-fi
-
-#Check for old packages
-rm -rf $(ls -d &plugin;/packages/* | grep -v "${KERNEL_V%%-*}")
-
-download() {
-#Download iSCSI Target
-if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" "${DL_URL}/${PACKAGE}-1.txz" ; then
-  if [ "$(md5sum "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" | cut -d ' ' -f1)" != "$(wget -qO- "${DL_URL}/${PACKAGE}-1.txz.md5" | cut -d ' ' -f1)" ]; then
-    if [ -d &plugin; ]; then
-      rm -rf &plugin;
-    fi
-    echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
-    echo "--------------------------------CHECKSUM ERROR!---------------------------------"
-    exit 1
-  fi
-  echo "-------------Successfully downloaded iSCSI Target, please wait...!-------------"
-else
-  echo "----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
-  echo "------------------------Can't download iSCSI Target----------------------------"
-  exit 1
-fi
-}
-
-check() {
-if [ ! -f "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
-  echo "+=============================================================================="
-  echo "| WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING"
-  echo "|"
-  echo "| Don't close this window with the red 'X' in the top right corner until the 'DONE' button is displayed!"
-  echo "|"
-  echo "| WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING - WARNING"
-  echo "+=============================================================================="
-  echo
-  echo "------------------Downloading iSCSI Target, please wait...!--------------------"
-  echo "-----------This could take some time, please don't close this window!----------"
-  download
-elif [ ! -s "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz" ]; then
-  rm -rf &plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz
-  echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR-----"
-  echo "-----Download is empty please contact the developer of this plugin if the------"
-  echo "-------plugin has been already built against the current Kernel version--------"
-  exit 1
-else
-  echo "--------------------------iSCSI Target found locally!--------------------------"
-fi
-}
-
-install() {
-#Install iSCSI Target
-/sbin/installpkg "&plugin;/packages/${KERNEL_V%%-*}/${PACKAGE}-1.txz"
-}
-
 patch() {
 #Patching files and creating necessary direcotries/symlinks
 if [ ! -d /etc/target ]; then
@@ -163,34 +67,27 @@ fi
 ln -s /boot/config/iscsi/saveconfig.json /etc/target/saveconfig.json
 ln -s /boot/config/iscsi/.targetcli/prefs.bin /root/.targetcli/prefs.bin
 
-#Load/unload iSCSI Target on Array start/stop
+# Patching files to load/unload iSCSI Target on Array start/stop
 echo "
 # Load iSCSI configuration
 echo 'Loading iSCSI configuration'
 targetcli restoreconfig &amp;" >> /usr/local/emhttp/plugins/dynamix/event/disks_mounted/local_syslog_start
-	echo "
+echo "
 # Unload iSCSI configuration
 echo 'Unloading iSCSI configuration'
 targetcli clearconfig confirm=True &amp;" >> /usr/local/emhttp/plugins/dynamix/event/unmounting_disks/local_syslog_stop
 }
 
 start() {
-#Starting Targetcli-FB
-echo "---------------------Starting iSCSI Target, please wait...!--------------------"
+# Starting Targetcli-FB
+echo "---Starting iSCSI Target, please wait...!---"
 targetcli restoreconfig
 }
 
-# Define variables
-KERNEL_V="$(uname -r)"
-PACKAGE="iscsi-plugin-${KERNEL_V}"
-DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download/$KERNEL_V"
-
-#Check if iSCSI Target is allready downloaded
-check
-install > /dev/null
+# Check if everything is in place and start tagetcli if necessary
 patch
 if [ ! -z "$(pidof emhttpd)" ]; then
-	start
+  start
 fi
 
 echo ""
@@ -205,31 +102,10 @@ echo ""
 </INLINE>
 </FILE>
 
-<!--
-The 'remove' script.
--->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 
-removepkg &packages;/&name;-&version;.txz 
-
-# Remove installed packages
-find "&packages;/" -type f -iname "*.txz" -delete
-
-# Remove possible leftovers
-rm -rf /usr/local/emhttp/plugins/&name; \
-       \
-       &packages;
-
-rm -f /tmp/plugins/&name;.plg 
-
-
-
-# Remove all plugin files from emhttp.
-rm -rf /usr/local/emhttp/plugins/&name; 2>/dev/null
-
-
-
+removepkg iSCSI-plugin-&version;.txz 
 
 echo ""
 echo "-----------------------------------------------------------"
