@@ -105,7 +105,15 @@ echo ""
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 
-removepkg iSCSI-plugin-&version;.txz 
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been uninstalling."
+echo "-----------------------------------------------------------"
+echo ""
+echo " Please wait for the Done button to appear."
+echo ""
+
+removepkg iSCSI-plugin-&version;.txz > /dev/null
 
 echo ""
 echo "-----------------------------------------------------------"
