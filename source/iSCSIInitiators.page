@@ -1,4 +1,4 @@
-Menu="iSCSISettings:3"
+Menu="iSCSISettings:4"
 Title="Initiators"
 Tag="save"
 ---
@@ -48,7 +48,8 @@ if (count($_POST)) {
       if ($var[0]=="fileio") $name="/backstores/fileio/".$var[1] ;
       $cmdstr="/iscsi/".$tgtname."/tpg1/luns create ".$name." add_mapped_luns=false" ;
       processTargetcli($cmdstr) ;     
-    }
+      $_SESSION['availstorage'] = availstorage();
+  }
 
   if(isset($_POST['#applytgt'])) {
     if ($_POST['#applytgt'] == "_(Add Target)_") {
@@ -133,6 +134,43 @@ function removeLUN() {
 
 
 
+_(LUNS)_
+
+<pre><form id="iscsiluns" onsubmit="return false"><table id='it2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
+
+
+
+<form id="newLUN" method="POST" >
+<td><b>Create LUN-------------:</b></td>
+  <select name="TGTname" required>
+    <option selected="selected" value="">Choose IQN</option>
+      <?php
+      $output = $_SESSION['availtgt'];
+      
+      foreach($output as $item){
+
+      echo "<option value=\"$item\"> $item</option>";
+}
+?>
+</select> 
+
+<select name="LUNname" required>
+    <option selected="selected" value="" >Choose Storage</option>
+      <?php
+      $output = $_SESSION['availstorage'];
+
+      foreach($output as $item){
+
+      echo "<option value=\"$item\"> $item</option>";
+
+}
+?>
+
+</option>
+
+<input type="submit" name="#applyLUN" value='_(Add LUN)_'>
+</form>
+
 _(Initiators)_
 
 <pre><form id="iscsiinits" onsubmit="return false"><table id='it1' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
@@ -183,7 +221,7 @@ _(Initiators)_
 ?>
 </select> 
 <input type="text" name="newiqn" required value="" placeholder="Initiator Name" />
-<input type="text" name="newmapnumber" size="5" name="map" required placeholder="Map Number" />
+<input type="text" name="newmapnumber" size="5" name="map" required placeholder="Lun Map Number i.e. 0, 1 or 2 Should be unique." />
 <input type="text" name="newmaplunbs" size="5" name="lun"  required placeholder="Lun or Backstore Name" list="backstores" />
 <datalist id="backstores">
   <?php
@@ -203,45 +241,6 @@ Write Protect:
 </form>
 
 
-
-_(LUNS)_
-
-<pre><form id="iscsiluns" onsubmit="return false"><table id='it2' class='pre'><tr><td><div class="spinner"></div></td></tr></table></form></pre><br>
-
-
-
-<form id="newLUN" method="POST" >
-
-
-<td><b>Create LUN-------------:</b></td>
-  <select name="TGTname" required>
-    <option selected="selected" value="">Choose IQN</option>
-      <?php
-      $output = $_SESSION['availtgt'];
-      
-      foreach($output as $item){
-
-      echo "<option value=\"$item\"> $item</option>";
-}
-?>
-</select> 
-
-<select name="LUNname" required>
-    <option selected="selected" value="" >Choose Storage</option>
-      <?php
-      $output = $_SESSION['availstorage'];
-
-      foreach($output as $item){
-
-      echo "<option value=\"$item\"> $item</option>";
-
-}
-?>
-
-</option>
-
-<input type="submit" name="#applyLUN" value='_(Add LUN)_'>
-</form>
 
 
 <input type="button" value="_(Done)_" onclick="done()">

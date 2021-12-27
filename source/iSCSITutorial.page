@@ -1,0 +1,98 @@
+Menu="iSCSISettings:1"
+Title="Tutorial"
+Tag="iscsi"
+
+---
+<?PHP
+/* Copyright 2020-2020, Simon Fairweather
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ */
+$plugin = "unraid.iSCSI";
+$docroot = $docroot ?? $_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
+$translations = file_exists("$docroot/webGui/include/Translations.php");
+global $scsitab ;
+require_once "$docroot/plugins/$plugin/include/Legacy.php";
+require_once "$docroot/plugins/$plugin/include/lib.php";
+?>
+<?if (! $translations):?>
+<?eval('?>'.parse_file("$docroot/plugins/$plugin/iSCSIStatus.page"))?>
+<?else:?>
+<?
+/* read translations */
+parse_plugin('unraid.iscsi');
+?>
+
+
+<style>
+table.pre{margin-top:0;background:transparent}
+table.pre td:first-child{width:144px}
+table tr td{padding:0 0 3px 0;margin:0}
+table tr td.thin{line-height:8px;height:8px}
+</style>
+
+<script>
+if ( window.history.replaceState ) {
+window.history.replaceState( null, null, window.location.href );
+}
+
+
+</script>
+
+**_(How to)_**
+
+<p style="text-align: left;"><b><i>First start by creating a drive mapping in device tab or creating a FileIO Volume to be used as the source.</i></b></p>
+<p style="text-align: left;"><b><i>Next head over to the initiators page.</i></b></p>
+<p style="text-align: left;"><b><i>Create a Target leave name blank for one to be auto created. i.e. iqn.2003-01.org.linux-iscsi.tower.x8664:sn.xxxxxxxxxxxxxxxx</i></b></p>
+<p style="text-align: left;"><b><i>Define a LUN using the name created i.e. iqn.2003-01.org.linux-iscsi.tower.x8664:sn.xxxxxxxxxxxxxxxx and chose the volume create earlier from the dropdown.</i></b></p>
+<p style="text-align: left;"><b><i>Add an initator this will be a unqiue reference from the initiator, i.e. as Windows Machine Traget is our local iqn iqn.2003-01.org.linux-iscsi.tower.x8664:sn.xxxxxxxxxxxxxxxx and the initiator is the other systems.<br>
+On windows open the iSCSI Initiator App goto configuration tab and find initiator name i.e. iqn.1991-05.com.microsoft:desktop-xxxxxx<br>
+for linux cat /etc/iscsi/initiatorname.iscsi</i></b></p>
+<p style="text-align: left;"><b><i>Complete the initial setup by mapping the LUN to the remote IGN, Select target from drop down, enter the IGN of the remote host if its the first use 0 or next available number if you have more than one LUN, and select the LUN from the dropdown.</i></b></p>
+<p style="text-align: left;"><b><i>Now you should have a basic setup and should be able to connect from the remote host.</i></b></p>
+<pre style="text-align: left;"><b><i>  iqn.2003-01.org.linux-iscsi.tower.x8664:sn.xxxxxxxxxxxxx<br>
+    iqn.1991-05.com.microsoft:desktop-xxxxxxx Mapped Luns:1 Attributes 8<br>
+          Mapped Lun:0 to Target lun:0 (/backstores/fileio/unraidboot).</i></b></pre>
+
+<p style="text-align: left;"><b>Status Page<br>Active Sessions.</b></p>
+<pre style="text-align: left;"><b><i>
+alias: 	sid: 1 type: Normal session-state: LOGGED_IN
+    name: iqn.1991-05.com.microsoft:desktop-xxxxxxx (NOT AUTHENTICATED)
+    mapped-lun: 0 backstore: fileio/unraidboot mode: rw
+    address: 192.168.1.41 (TCP)  cid: 1 connection-state: LOGGED_IN
+    </i></b></pre>
+
+<p style="text-align: left;">Configuration.</b></p>
+<pre style="text-align: left;"><b><i>
+o- / ......................................................................................................................... [...]
+  o- backstores .............................................................................................................. [...]
+  | o- block .................................................................................................. [Storage Objects: 0]
+  | o- fileio ................................................................................................. [Storage Objects: 2]
+  | | o- UNRAID .................................................... [/mnt/user/pxeboot/UNRAID.img (20.0GiB) write-back deactivated]
+  | | | o- alua ................................................................................................... [ALUA Groups: 1]
+  | | |   o- default_tg_pt_gp ....................................................................... [ALUA state: Active/optimized]
+  | | o- unraidboot ................................................................ [unraidboot.img (20.0MiB) write-back activated]
+  | |   o- alua ................................................................................................... [ALUA Groups: 1]
+  | |     o- default_tg_pt_gp ....................................................................... [ALUA state: Active/optimized]
+  | o- pscsi .................................................................................................. [Storage Objects: 0]
+  | o- ramdisk ................................................................................................ [Storage Objects: 0]
+  o- iscsi ............................................................................................................ [Targets: 1]
+  | o- iqn.2003-01.org.linux-iscsi.tower.x8664:sn.xxxxxxxxxxxx ........................................................... [TPGs: 1]
+  |   o- tpg1 ............................................................................................... [no-gen-acls, no-auth]
+  |     o- acls .......................................................................................................... [ACLs: 1]
+  |     | o- iqn.1991-05.com.microsoft:desktop-xxxxxxxx............................................................ [Mapped LUNs: 1]
+  |     |   o- mapped_lun0 ........................................................................... [lun0 fileio/unraidboot (rw)]
+  |     o- luns .......................................................................................................... [LUNs: 1]
+  |     | o- lun0 .......................................................... [fileio/unraidboot (unraidboot.img) (default_tg_pt_gp)]
+  |     o- portals .................................................................................................... [Portals: 1]
+  |       o- 0.0.0.0:3260 ..................................................................................................... [OK]
+  o- loopback ......................................................................................................... [Targets: 0]
+  o- vhost ............................................................................................................ [Targets: 0]
+  o- xen-pvscsi ....................................................................................................... [Targets: 0]
+</i></b></pre>
+<?endif;?>
