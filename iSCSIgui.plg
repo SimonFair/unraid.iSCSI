@@ -4,7 +4,8 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2.1.54-2">
+<!ENTITY version    "2022.04.22">
+<!ENTITY md5        "521c924ebac2744c5aaf69fe0550fb5f">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
@@ -24,12 +25,18 @@
 
 <CHANGES>
 
+###2022.04.22
+ - Add Events
+
+###2022.03.09
+- Made iSCSI a dedicated package and revert to version format YMD
+
+###2.1.54-2
 - Add Tutorial page 
 - Chg Order on Initiators page 
 - Chg Order of Tabs.
 
 ###2.1.54-1
-
 - Repackage based on Targetcli-fb version 2.1.54
 
 ###2021.07.13
@@ -50,17 +57,91 @@
 
 <FILE Run="/bin/bash">
 <INLINE>
-rm -f $(ls &plugin;/iSCSI-plugin-*.txz 2>/dev/null|grep -v '&version;')
+rm -f $(ls &plugin;/&name;*.txz 2>/dev/null|grep -v '&version;')
 </INLINE>
 </FILE>
 
-<FILE Name="&plugin;/iSCSI-plugin-&version;.txz" Run="upgradepkg --install-new">
-<URL>&packageURL;</URL>
+<FILE Name="&plugin;/&name;-&version;.txz" Run="upgradepkg --install-new">
+<URL>&gitURL;/packages/&name;-&version;.txz</URL>
 <MD5>&md5;</MD5>
 </FILE>
 
 <FILE Run="/bin/bash">
 <INLINE>
+PACKAGE="iSCSI"
+DL_URL="https://github.com/SimonFair/unraid.iSCSI/releases/download"
+
+#Wait for Network and timeout after 30 seconds
+HOST="8.8.8.8"
+for i in {1..10}; do
+  ping -c1 $HOST &amp;> /dev/null &amp;&amp; break;
+done
+
+#Get latest version from iSCSI and create directory
+LAT_V="$(wget -qO- https://api.github.com/repos/SimonFair/unraid.iSCSI/releases/latest | jq -r '.tag_name')"
+
+if [ ! -d "&plugin;/packages" ]; then
+  mkdir -p "&plugin;/packages"
+  CUR_V=""
+else
+  CUR_V="$(ls &plugin;/packages/ | cut -d '-' -f2 | sort -V | head -1)"
+fi
+
+#Check if version where fetched correctly
+if [ -z "$LAT_V" ]; then
+  if [ -z "CUR_V" ]; then
+    echo
+    echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
+    echo "---Something went horribly wrong, please contact the developer of the plugin!---"
+    echo
+    exit 1
+  else
+    LAT_V="${CUR_V}"
+    echo
+    echo "---Can't get latest version from iSCSI, using locally available version v$CUR_V!---"
+    echo
+  fi
+fi
+
+#Check for old packages
+rm -rf $(ls -d &plugin;/packages/* | grep -v "${LAT_V}")
+
+download() {
+#Download iSCSI package
+if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&plugin;/packages/${PACKAGE}-${LAT_V}-Unraid-1.txz" "${DL_URL}/${LAT_V}/${PACKAGE}-${LAT_V}-Unraid-1.txz" ; then
+  if [ "$(md5sum "&plugin;/packages/${PACKAGE}-${LAT_V}-Unraid-1.txz" | cut -d ' ' -f1)" != "$(wget -qO- "${DL_URL}/${LAT_V}/${PACKAGE}-${LAT_V}-Unraid-1.txz.md5" | cut -d ' ' -f1)" ]; then
+    echo
+    echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR------"
+    echo "--------------------------------CHECKSUM ERROR!---------------------------------"
+    exit 1
+  fi
+  echo
+  echo "--------------Successfully downloaded iSCSI, please wait...!----------------"
+else
+  echo
+  echo "-----ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR - ERROR-----"
+  echo "--------------------------Can't download iSCSI------------------------------"
+  exit 1
+fi
+}
+
+check() {
+if [ ! -f "&plugin;/packages/${PACKAGE}-${LAT_V}-Unraid-1.txz" ]; then
+  echo
+  echo "----------------Downloading iSCSI v${LAT_V}, please wait...!---------------"
+  echo "----------This could take some time, please don't close this window!----------"
+  download
+else
+  echo
+  echo "----------------------iSCSI v${CUR_V} found locally!-----------------------"
+fi
+}
+
+install() {
+#Install iSCSI
+/sbin/installpkg "&plugin;/packages/${PACKAGE}-${LAT_V}-Unraid-1.txz"
+}
+
 patch() {
 #Patching files and creating necessary direcotries/symlinks
 if [ ! -d /etc/target ]; then
@@ -75,15 +156,7 @@ fi
 ln -s /boot/config/iscsi/saveconfig.json /etc/target/saveconfig.json
 ln -s /boot/config/iscsi/.targetcli/prefs.bin /root/.targetcli/prefs.bin
 
-# Patching files to load/unload iSCSI Target on Array start/stop
-echo "
-# Load iSCSI configuration
-echo 'Loading iSCSI configuration'
-targetcli restoreconfig &amp;" >> /usr/local/emhttp/plugins/dynamix/event/disks_mounted/local_syslog_start
-echo "
-# Unload iSCSI configuration
-echo 'Unloading iSCSI configuration'
-targetcli clearconfig confirm=True &amp;" >> /usr/local/emhttp/plugins/dynamix/event/unmounting_disks/local_syslog_stop
+
 }
 
 start() {
@@ -92,17 +165,36 @@ echo "---Starting iSCSI Target, please wait...!---"
 targetcli restoreconfig
 }
 
-# Check if everything is in place and start tagetcli if necessary
-patch
-if [ ! -z "$(pidof emhttpd)" ]; then
-  start
+#Check if iSCSI is on the latest version and already downloaded
+check
+
+if [ ! -z "$(which targetcli 2&gt; /dev/null)" ]; then
+  if [ "${CUR_V}" != "${LAT_V}" ]; then
+    echo
+    echo "-------Please restart your server to install the new iSCSI v${LAT_V}!------"
+  else
+    echo
+    echo "---Nothing to do, iSCSI is already installed and on the latest v${CUR_V}!---"
+    echo
+  fi
+else
+  echo
+  echo "------------------Installing iSCSI v${LAT_V}, please wait...!----------------"
+  install >/dev/null
+  patch
+  if [ ! -z "$(pidof emhttpd)" ]; then
+    start
+  fi
+  echo
+  echo "----------------Installation of iSCSI v${LAT_V} successful!------------------"
+  echo
 fi
 
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; has been installed."
-echo " "
-echo " Copyright 2016-2020, &author;"
+echo ""
+echo " Copyright 2016-2022, &author;"
 echo " Version: &version;"
 echo ""
 echo "-----------------------------------------------------------"
@@ -121,8 +213,16 @@ echo ""
 echo " Please wait for the Done button to appear."
 echo ""
 
+# Remove plugin related files
+removepkg $(ls &plugin;/packages/ | sort -V | head -1) >/dev/null
+removepkg &name;-&version;
+rm -rf /usr/local/emhttp/plugins/&name;
+rm -rf &plugin;
 removepkg iSCSI-plugin-&version;.txz > /dev/null
 
+#Remove load/unload iSCSI Target on Array start/stop
+sed -i '/\n/!N;/\n.*# Load iSCSI configuration/{$d;N;N;d};P;D' /usr/local/emhttp/plugins/dynamix/event/disks_mounted/local_syslog_start
+sed -i '/\n/!N;/\n.*# Unload iSCSI configuration/{$d;N;N;d};P;D' /usr/local/emhttp/plugins/dynamix/event/unmounting_disks/local_syslog_stop
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; has been uninstalled."
