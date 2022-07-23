@@ -54,6 +54,7 @@ function path_selected() {
 
 <?php
 require_once "$docroot/plugins/$plugin/include/lib.php";
+$bgcolor           = strstr('white,azure',$display['theme']) ? '#f2f2f2' : '#1c1c1c';
 
 if (count($_POST)) {
 	if ($_POST['#apply'] == "_(Add FileIO)_") {
@@ -70,6 +71,11 @@ if (count($_POST)) {
 ?>
 
 <style>
+body{-webkit-overflow-scrolling:touch}
+.errortext{color:#EF3D47;display:none}
+.fileTree{background:<?=$bgcolor?>;width:300px;max-height:150px;overflow-y:scroll;overflow-x:hidden;position:absolute;z-index:100;display:none}
+.basic{display:block}
+.advanced{display:none}
 table.pre{margin-top:0;background:transparent}
 table.pre td:first-child{width:50px ;}
 table.pre td:second-child{width:50px}

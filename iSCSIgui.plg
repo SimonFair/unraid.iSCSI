@@ -4,14 +4,14 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2022.04.22">
+<!ENTITY version    "2022.07.23">
 <!ENTITY md5        "521c924ebac2744c5aaf69fe0550fb5f">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL "https://forums.unraid.net/topic/98483-plugins-iscsi-gui-and-iscsi-target/">
 <!ENTITY packageURL "&gitURL;/packages/iSCSI-plugin-&version;.txz">
-<!ENTITY md5        "431ce0775a82aebacfeeee01239e7f37">
+<!ENTITY md5        "68fbec74c52c28cfe21db4d2fa7183ed">
 ]>
 
 <PLUGIN name="&name;"
@@ -24,6 +24,9 @@
 		min="6.9.0">
 
 <CHANGES>
+###2022.07.23
+ - Fix for lsblk bug in until-linux 2.38
+ - FIx for file list when using dark theme
 
 ###2022.04.22
  - Add Events

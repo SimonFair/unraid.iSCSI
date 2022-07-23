@@ -32,8 +32,14 @@ if (!$fl) {
   echo "<p class='notice shift'>"._('Targetcli in use unable to read status and config.').".</p>";
   return;
 } 
+$bgcolor           = strstr('white,azure',$display['theme']) ? '#f2f2f2' : '#1c1c1c';
 ?>
 <style>
+body{-webkit-overflow-scrolling:touch}
+.errortext{color:#EF3D47;display:none}
+.fileTree{background:<?=$bgcolor?>;width:300px;max-height:150px;overflow-y:scroll;overflow-x:hidden;position:absolute;z-index:100;display:none}
+.basic{display:block}
+.advanced{display:none}
 table.pre{margin-top:0;background:transparent}
 table.pre td:first-child{width:144px}
 table tr td{padding:0 0 3px 0;margin:0}

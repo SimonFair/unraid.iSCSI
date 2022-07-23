@@ -28,7 +28,7 @@ function get_unassigned_disks() {
 
 	$ud_disks = $paths = $unraid_disks = $b =  array();
 	/* Get all devices by id. */
-	 exec('lsblk -OJ'  ,$tj) ;
+	 exec('lsblk -bOJ'  ,$tj) ;
 	$t=json_decode(implode("", $tj), true);
 	$t = $t['blockdevices'] ;	
 	foreach (listDir("/dev/disk/by-id/") as $p) {
