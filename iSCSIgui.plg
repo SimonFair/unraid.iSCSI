@@ -4,14 +4,13 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2022.04.22">
-<!ENTITY md5        "521c924ebac2744c5aaf69fe0550fb5f">
+<!ENTITY version    "2022.07.23">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL "https://forums.unraid.net/topic/98483-plugins-iscsi-gui-and-iscsi-target/">
 <!ENTITY packageURL "&gitURL;/packages/iSCSI-plugin-&version;.txz">
-<!ENTITY md5        "521c924ebac2744c5aaf69fe0550fb5f">
+<!ENTITY md5        "c4979b8e11655641267122e7b673b4b4">
 ]>
 
 <PLUGIN name="&name;"
