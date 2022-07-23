@@ -11,7 +11,7 @@
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL "https://forums.unraid.net/topic/98483-plugins-iscsi-gui-and-iscsi-target/">
 <!ENTITY packageURL "&gitURL;/packages/iSCSI-plugin-&version;.txz">
-<!ENTITY md5        "be76cfcd5f6423ba812729f427e42f4b">
+<!ENTITY md5        "c4979b8e11655641267122e7b673b4b4">
 ]>
 
 <PLUGIN name="&name;"
