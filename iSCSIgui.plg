@@ -26,7 +26,7 @@
 <CHANGES>
 ###2022.07.23
  - Fix for lsblk bug in until-linux 2.38
- - FIx for file list when using dark theme
+ - Fix for file list when using dark theme
 
 ###2022.04.22
  - Add Events
