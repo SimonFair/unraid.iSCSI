@@ -162,7 +162,7 @@ EOT;
    if ($fileio["plugin"] == "fileio") {
    $iscsifio="iscsifio;".$fileio["name"].';'.$fileio["dev"] ;
    echo "<td>" ;
-   echo '<input type="checkbox" class="'.$fileio["name"].'" value="'.$iscsifio.'" </input>     '  ;
+   echo '<input type="checkbox" class="FIO'.$fileio["name"].'" value="'.$iscsifio.'" </input>     '  ;
    # echo "</td><td>" ; 
      echo $fileio["name"]."=>".str_pad($fileio["dev"],50)."</td><td>Write Back:".($fileio["write_back"] ? str_pad("true",10) : str_pad("false",10))."  Size:".my_scale($fileio["size"], $unit)." $unit"."</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>" ;
  }

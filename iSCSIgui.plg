@@ -23,6 +23,10 @@
 		min="6.9.0">
 
 <CHANGES>
+###2022.07.25 
+
+ - Fix removal of FIO files with names starting with a numeric.
+
 ###2022.07.23
  - Fix for lsblk bug in until-linux 2.38
  - Fix for file list when using dark theme
