@@ -93,6 +93,10 @@ else
   CUR_V="$(ls &plugin;/packages/ | cut -d '-' -f2 | sort -V | head -1)"
 fi
 
+if [ ! -f /usr/lib64/libffi.so.6 ]; then
+  ln -s /usr/lib64/libffi.so.7 /usr/lib64/libffi.so.6 2>/dev/null
+fi
+
 #Check if version where fetched correctly
 if [ -z "$LAT_V" ]; then
   if [ -z "CUR_V" ]; then
