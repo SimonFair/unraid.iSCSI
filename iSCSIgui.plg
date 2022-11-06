@@ -4,7 +4,7 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2022.07.26">
+<!ENTITY version    "2022.11.06">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
@@ -23,6 +23,10 @@
 		min="6.9.0">
 
 <CHANGES>
+###2022.11.06
+
+ - Fix 6.11.2 - added missing libffi7 package
+
 ###2022.07.26 
 
  - Fix 6.11 load issue 
@@ -74,6 +78,11 @@ rm -f $(ls &plugin;/&name;*.txz 2>/dev/null|grep -v '&version;')
 <FILE Name="&plugin;/&name;-&version;.txz" Run="upgradepkg --install-new">
 <URL>&gitURL;/packages/&name;-&version;.txz</URL>
 <MD5>&md5;</MD5>
+</FILE>
+
+<FILE Name="&plugin;/packages/libffi-3.3-x86_64-3.txz" Run="installpkg">
+<URL>"&gitURL;/packages/libffi-3.3-x86_64-3.txz"</URL>
+<MD5>ebb7ee0428c869f3f8ae4d8f60fa0259</MD5>
 </FILE>
 
 <FILE Run="/bin/bash">
@@ -230,6 +239,8 @@ echo ""
 # Remove plugin related files
 removepkg $(ls &plugin;/packages/ | sort -V | head -1) >/dev/null
 removepkg &name;-&version;
+removepkg libffi-3.3-x86_64-3 > /dev/null
+rm -rf /usr/lib64/libffi.so.6
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf &plugin;
 removepkg iSCSI-plugin-&version;.txz > /dev/null
