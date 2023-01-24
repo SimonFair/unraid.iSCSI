@@ -4,7 +4,7 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2022.11.06">
+<!ENTITY version    "2023.01.24">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
@@ -23,6 +23,10 @@
 		min="6.9.0">
 
 <CHANGES>
+###2023.01.24
+
+ - Fix in old package detection routine to not remove libffi7 package
+
 ###2022.11.06
 
  - Fix 6.11.2 - added missing libffi7 package
@@ -127,7 +131,7 @@ if [ -z "$LAT_V" ]; then
 fi
 
 #Check for old packages
-rm -rf $(ls -d &plugin;/packages/* | grep -v "${LAT_V}")
+rm -rf $(ls -d &plugin;/packages/* | grep -E -v "${LAT_V}|libffi-")
 
 download() {
 #Download iSCSI package
