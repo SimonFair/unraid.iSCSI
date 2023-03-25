@@ -38,6 +38,14 @@ function get_unassigned_disks() {
 			$paths[$r] = $p;
 			}
 		}		
+
+	/* Add zfs zvols */
+		foreach (listDir("/dev/zvol/") as $p) {
+			$r = realpath($p);
+				   $paths[$r] = $p;
+
+			 }
+
 	natsort($paths);
 	
 	/* Get all unraid disk devices (array disks, cache, and pool devices) */
@@ -48,7 +56,7 @@ function get_unassigned_disks() {
 	}
 	
 	foreach($t as $tr) {
-		    
+			if (!is_bool(strpos($tr['name'],'zd'))) $tr['tran'] = "zfs" ;
 			if ($tr['tran'] != '' ) {   
 			$b["/dev/".$tr['name']]=$tr;
 		}}

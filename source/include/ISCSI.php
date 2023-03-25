@@ -126,7 +126,10 @@ case 'dt1':
                         }
 
             if($defined ) {
-                   $value= "ISCSI Dev:".substr($device["device"], 16) ;
+                if (!is_bool(strpos($device["device"],'/dev/zvol'))) {
+                  $devname= substr($device["device"], 10) ;
+                  } else $devname=substr($device["device"], 16) ;
+              $value= "ISCSI Dev:".$devname ;
               echo "<tr><td></td><td><td style=\"padding-left: 50px;\":>".$value."</td></tr>" ; 
             } 
           }

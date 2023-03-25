@@ -4,13 +4,13 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2022.07.23">
+<!ENTITY version    "2023.03.25">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui-dev.plg">
 <!ENTITY supportURL "https://forums.unraid.net/topic/98483-plugins-iscsi-gui-and-iscsi-target/">
 <!ENTITY packageURL "&gitURL;/packages/iSCSI-plugin-&version;.txz">
-<!ENTITY md5        "c4979b8e11655641267122e7b673b4b4">
+<!ENTITY md5        "bb4ae32ed6ff5520ed972f219eb22806">
 ]>
 
 <PLUGIN name="&name;"
@@ -23,6 +23,22 @@
 		min="6.9.0">
 
 <CHANGES>
+###2023.01.24
+
+ - Fix in old package detection routine to not remove libffi7 package
+
+###2022.11.06
+
+ - Fix 6.11.2 - added missing libffi7 package
+
+###2022.07.26 
+
+ - Fix 6.11 load issue 
+
+###2022.07.25 
+
+ - Fix removal of FIO files with names starting with a numeric.
+
 ###2022.07.23
  - Fix for lsblk bug in until-linux 2.38
  - Fix for file list when using dark theme
@@ -68,6 +84,11 @@ rm -f $(ls &plugin;/&name;*.txz 2>/dev/null|grep -v '&version;')
 <MD5>&md5;</MD5>
 </FILE>
 
+<FILE Name="&plugin;/packages/libffi-3.3-x86_64-3.txz" Run="installpkg">
+<URL>"&gitURL;/packages/libffi-3.3-x86_64-3.txz"</URL>
+<MD5>ebb7ee0428c869f3f8ae4d8f60fa0259</MD5>
+</FILE>
+
 <FILE Run="/bin/bash">
 <INLINE>
 PACKAGE="iSCSI"
@@ -89,6 +110,10 @@ else
   CUR_V="$(ls &plugin;/packages/ | cut -d '-' -f2 | sort -V | head -1)"
 fi
 
+if [ ! -f /usr/lib64/libffi.so.6 ]; then
+  ln -s /usr/lib64/libffi.so.7 /usr/lib64/libffi.so.6 2>/dev/null
+fi
+
 #Check if version where fetched correctly
 if [ -z "$LAT_V" ]; then
   if [ -z "CUR_V" ]; then
@@ -106,7 +131,7 @@ if [ -z "$LAT_V" ]; then
 fi
 
 #Check for old packages
-rm -rf $(ls -d &plugin;/packages/* | grep -v "${LAT_V}")
+rm -rf $(ls -d &plugin;/packages/* | grep -E -v "${LAT_V}|libffi-")
 
 download() {
 #Download iSCSI package
@@ -218,6 +243,8 @@ echo ""
 # Remove plugin related files
 removepkg $(ls &plugin;/packages/ | sort -V | head -1) >/dev/null
 removepkg &name;-&version;
+removepkg libffi-3.3-x86_64-3 > /dev/null
+rm -rf /usr/lib64/libffi.so.6
 rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf &plugin;
 removepkg iSCSI-plugin-&version;.txz > /dev/null

@@ -78,7 +78,10 @@ div.closed{display:none}
     $devrochange=$newe[($i+9)] ;
  
     if ($blockdevice[$devblock]["nickname"]=="") 
-        $devname=substr($devbyid, 16) ;
+        if (!is_bool(strpos($devbyid,'/dev/zvol'))) {
+            $devname= substr($devbyid, 10) ;
+            $devname = str_replace('/',":",$devname) ;
+        } else $devname=substr($devbyid, 16) ;
     else $devname=$blockdevice[$devblock]["nickname"] ;
        
     if ($ii) echo "<br><span class='key'></span>&nbsp;";
