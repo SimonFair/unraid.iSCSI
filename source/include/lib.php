@@ -40,11 +40,13 @@ function get_unassigned_disks() {
 		}		
 
 	/* Add zfs zvols */
-		foreach (listDir("/dev/zvol/") as $p) {
-			$r = realpath($p);
-				   $paths[$r] = $p;
+		if (is_dir("/dev/zvol/")) {
+			foreach (listDir("/dev/zvol/") as $p) {
+				$r = realpath($p);
+					$paths[$r] = $p;
 
-			 }
+			}
+		}		
 
 	natsort($paths);
 	

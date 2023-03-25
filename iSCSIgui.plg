@@ -4,13 +4,13 @@
 <!ENTITY name       "unraid.iSCSI">
 <!ENTITY plugin     "/boot/config/plugins/&name;">
 <!ENTITY author     "SimonFair">
-<!ENTITY version    "2023.03.25">
+<!ENTITY version    "2023.03.25a">
 <!ENTITY launch     "Settings/iSCSISettings">
 <!ENTITY gitURL     "https://raw.githubusercontent.com/SimonFair/unraid.iSCSI/main">
 <!ENTITY pluginURL  "&gitURL;/iSCSIgui.plg">
 <!ENTITY supportURL "https://forums.unraid.net/topic/98483-plugins-iscsi-gui-and-iscsi-target/">
 <!ENTITY packageURL "&gitURL;/packages/iSCSI-plugin-&version;.txz">
-<!ENTITY md5        "bb4ae32ed6ff5520ed972f219eb22806">
+<!ENTITY md5        "a6a7c9899196f6fc87c2220a6af2f631">
 ]>
 
 <PLUGIN name="&name;"
@@ -23,6 +23,10 @@
 		min="6.9.0">
 
 <CHANGES>
+###2023.01.25
+
+  - Add ZFS Support
+
 ###2023.01.24
 
  - Fix in old package detection routine to not remove libffi7 package
